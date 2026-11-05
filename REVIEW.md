@@ -26,8 +26,18 @@ Ce que le relecteur doit savoir sur ce projet en plus du code.
 
 ## Exécuter le code
 
-- `workerMain` se teste sous Node : l'extraire du fichier et l'exécuter avec un `self`
-  simulé (`fetch`, `postMessage`, `addEventListener`) qui sert des playlists maîtresse et
-  média factices et des réponses GraphQL.
+- Jeu d'essai, sans dépendance (testé sous Node 22) :
+
+  ```bash
+  node tests/ronflux.test.js
+  ```
+
+  `VERBOSE=1` affiche les journaux de la page et du worker. `tests/harness.js` exécute
+  `src/ronflux.user.js` dans une page Twitch simulée (contexte vm) ; le worker du lecteur
+  reçoit le script construit par l'enveloppe (`workerMain` sérialisé) et tourne dans un
+  contexte séparé, avec un `self` simulé (`fetch`, `postMessage`, `addEventListener`) qui sert
+  des playlists maîtresse et média factices et des réponses GraphQL. Horloge, minuteurs et
+  `requestAnimationFrame` n'avancent que sur demande du test (`env.clock`), et `env.net.adFor`
+  décide quels flux ont la pub : un nouveau scénario tient en quelques lignes.
 - Ne jamais lancer `install.ps1` : il ferme le navigateur de l'utilisateur pour réinstaller
   l'extension.
