@@ -1,0 +1,33 @@
+# Relecture de Ronflux
+
+Ce que le relecteur doit savoir sur ce projet en plus du code.
+
+## Structure
+
+- `src/ronflux.user.js` est la source unique. `build.ps1` en tire `dist/` (extension
+  décompressée et `.xpi`), qui est ignoré par git : ne jamais relire ni corriger `dist/`.
+- Le script tourne dans la page Twitch (monde `MAIN`, `document_start`) et injecte
+  `workerMain` dans le worker du lecteur.
+
+## Zones à relire de près
+
+- `workerMain` est sérialisé par `toString()` puis placé en tête du script du worker Twitch.
+  Il ne doit référencer aucune variable extérieure (tout passe par `cfg`), et une exception
+  levée à son premier niveau arrête tout le worker, donc le lecteur.
+- Fonctions `async` partagées par une promesse mise en cache (`ad.pending`) : une fonction
+  `async` s'exécute de façon synchrone jusqu'à son premier `await`, `finally` compris.
+- Tout ce que la page affiche ou modifie pendant une pub (masque, son coupé, message) doit
+  être retiré quelle que soit la façon dont la pub se termine : fin normale, changement de
+  chaîne ou raid, worker terminé, onglet en arrière-plan. Le navigateur suspend
+  `requestAnimationFrame` dans un onglet caché ou une fenêtre recouverte, pas les minuteurs.
+- Détails internes de Twitch dont dépend le script : URL usher (`/channel/hls/`, v1 et v2),
+  marqueurs de pub des playlists, requête GraphQL `PlaybackAccessToken`, composant React du
+  lecteur (`setSrc`). Une hypothèse sur leur forme doit échouer sans casser le lecteur.
+
+## Exécuter le code
+
+- `workerMain` se teste sous Node : l'extraire du fichier et l'exécuter avec un `self`
+  simulé (`fetch`, `postMessage`, `addEventListener`) qui sert des playlists maîtresse et
+  média factices et des réponses GraphQL.
+- Ne jamais lancer `install.ps1` : il ferme le navigateur de l'utilisateur pour réinstaller
+  l'extension.

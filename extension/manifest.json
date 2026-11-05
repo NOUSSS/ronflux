@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "Ronflux",
+  "version": "1.0.2",
+  "description": "Bloque les publicités vidéo (pre-roll et mid-roll) des lives Twitch en basculant sur un flux de secours sans pub.",
+  "icons": {
+    "48": "icon.svg",
+    "96": "icon.svg"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{adf926d0-3333-45f4-b9d2-b54afdb0fc13}",
+      "strict_min_version": "128.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  },
+  "permissions": ["declarativeNetRequest"],
+  "host_permissions": ["*://*.twitch.tv/*"],
+  "content_scripts": [
+    {
+      "matches": ["*://*.twitch.tv/*"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true
+    }
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "twitch-ads",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  }
+}
