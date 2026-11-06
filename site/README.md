@@ -30,13 +30,13 @@ base complétée par navigateur (`extension/manifest.base.json` + `manifest.fire
 Dans `index.html`, ces variantes sont des blocs `<!-- si:nom -->…<!-- /si:nom -->` et
 `<!-- sinon:nom -->…<!-- /sinon:nom -->` (`cws`, `maj-firefox`), résolus au build.
 
-## Cloudflare Pages
+## Déploiement (Cloudflare Pages)
 
-| Réglage | Valeur |
-|---|---|
-| Répertoire racine | `site` |
-| Commande de build | `npm run build` |
-| Répertoire de sortie | `dist` |
+Le site n'est pas relié au dépôt chez Cloudflare : les fichiers à télécharger ne sont pas
+dans git, et le `.xpi` signé exige les clés AMO. `release.ps1`, à la racine du dépôt, construit
+le site, y ajoute les paquets (voir plus bas) et envoie `site/dist/` par
+`wrangler pages deploy` au projet Pages `ronflux`. Il s'arrête si `site/dist/index.html` manque
+ou si `site/dist/_headers` ne sert pas le `.xpi` en `application/x-xpinstall`.
 
 `public/_headers` est copié tel quel : politique de sécurité du contenu (rien d'extérieur),
 et types MIME des fichiers à télécharger. `application/x-xpinstall` est indispensable pour que
@@ -55,9 +55,9 @@ git). L'intégration les dépose avant le build dans `site/public/`, ou après l
 | userscript | `/telecharger/ronflux.user.js` |
 | manifeste de mise à jour Firefox (à la racine, pas dans `telecharger/`) | `/updates.json` |
 
-`release.ps1` (à la racine du dépôt) produit exactement cette arborescence dans
-`dist/publication/` : la copier telle quelle dans `site/dist/` après le build. `updates.json` et le
-`.xpi` partent ensemble (le premier contient l'empreinte du second).
+`release.ps1` produit exactement cette arborescence dans `dist/publication/` et la copie dans
+`site/dist/` après le build. `updates.json` et le `.xpi` partent ensemble (le premier contient
+l'empreinte du second).
 
 ## Réglages
 
