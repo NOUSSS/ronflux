@@ -1,0 +1,1065 @@
+/*
+ * Ronflux : le compte rendu d'une soirée de live, sur papier d'enregistreur.
+ * Papier vert pâle réglé en grands carreaux de 40 px et petits de 8 px ; encre vert-noir en
+ * trois valeurs ; une seule couleur d'événement, l'ocre, pour les pubs. Filets d'un pixel,
+ * angles droits, ni ombre ni arrondi. Tout se règle sur les jetons ci-dessous.
+ *
+ * Une seule géométrie : les hauteurs de ligne, marges et blocs sont des multiples de 8 px,
+ * et les filets horizontaux sont peints dans le bloc (background) pour ne rien décaler.
+ */
+
+/* Polices auto-hébergées (fichiers servis par le site, aucun appel extérieur). */
+@font-face {
+  font-family: 'Sofia Sans Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  font-display: block;
+  src: url('@fontsource-variable/sofia-sans-condensed/files/sofia-sans-condensed-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Sofia Sans Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  font-display: block;
+  src: url('@fontsource-variable/sofia-sans-condensed/files/sofia-sans-condensed-latin-ext-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans';
+  font-style: normal;
+  font-weight: 1 1000;
+  font-display: block;
+  src: url('@fontsource-variable/sofia-sans/files/sofia-sans-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Sofia Sans';
+  font-style: normal;
+  font-weight: 1 1000;
+  font-display: block;
+  src: url('@fontsource-variable/sofia-sans/files/sofia-sans-latin-ext-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* ------------------------------------------------------------------ Jetons */
+:root {
+  /* Papier et encres */
+  --papier: #eef2ec;
+  --papier-clair: #f6f8f4; /* papier des tracés */
+  --reglure: #dfe8e1; /* petits carreaux */
+  --reglure-forte: #c6d6ca; /* grands carreaux, filets secondaires */
+  --encre: #1d2a2f; /* texte, tracés, bouton */
+  --encre-2: #4a5c60; /* annotations, texte secondaire */
+  --encre-survol: #34474e;
+  --ocre: #d9a441; /* la pub, seule couleur d'événement */
+  --ocre-voile: rgb(217 164 65 / 0.3);
+
+  /* Réglure et filets, en images de fond */
+  --reglure-h: linear-gradient(var(--reglure-forte) 1px, transparent 1px);
+  --reglure-v: linear-gradient(90deg, var(--reglure-forte) 1px, transparent 1px);
+  --reglure-fine-h: linear-gradient(var(--reglure) 1px, transparent 1px);
+  --reglure-fine-v: linear-gradient(90deg, var(--reglure) 1px, transparent 1px);
+  --filet-encre: linear-gradient(var(--encre), var(--encre));
+  --filet: linear-gradient(var(--reglure-forte), var(--reglure-forte));
+
+  /* Typographie */
+  --f-titre: 'Sofia Sans Condensed', 'Arial Narrow', sans-serif;
+  --f-texte: 'Sofia Sans', system-ui, sans-serif;
+  --f-code: ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace;
+  --t-petit: 0.9375rem; /* 15 px */
+  --t-texte: 1.0625rem; /* 17 px */
+  --t-titre: clamp(2.5rem, 1.1rem + 4.2vw, 4.75rem);
+  --t-h2: clamp(2rem, 1.5rem + 1.6vw, 2.75rem);
+  --ligne: 24px; /* hauteur de ligne du texte : trois petits carreaux */
+
+  /* La grille du papier */
+  --u: 8px;
+  --carreau: 40px;
+  --gouttiere: 160px; /* noms des pistes, titres de rangée */
+  --lecture: 160px; /* lectures, à droite des plumes */
+
+  --cadre: min(1240px, calc(100% - 64px));
+}
+
+/* Le cadre bat la mesure du papier : sa largeur est un nombre impair de grands carreaux,
+   pour que ses bords tombent sur les lignes d'une réglure centrée. */
+@supports (width: round(down, 100px, 80px)) {
+  :root {
+    --cadre: min(1240px, calc(round(down, 100% - 104px, 80px) + 40px));
+  }
+}
+
+@media (max-width: 639px) {
+  :root {
+    --cadre: calc(100% - 32px);
+  }
+  @supports (width: round(down, 100px, 16px)) {
+    :root {
+      --cadre: calc(round(down, 100% - 40px, 16px) + 8px);
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ Base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color: var(--encre);
+  background-color: var(--papier);
+  background-image: var(--reglure-h), var(--reglure-v), var(--reglure-fine-h), var(--reglure-fine-v);
+  background-size: var(--carreau) var(--carreau), var(--carreau) var(--carreau), var(--u) var(--u), var(--u) var(--u);
+  background-position: center top;
+  scrollbar-color: var(--encre-2) var(--papier);
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: var(--f-texte);
+  font-size: var(--t-texte);
+  line-height: var(--ligne);
+  font-weight: 400;
+}
+
+::selection {
+  background: var(--ocre);
+  color: var(--encre);
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+ol,
+figure {
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--f-titre);
+  font-weight: 700;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--encre);
+  outline-offset: 2px;
+}
+
+img,
+svg {
+  display: block;
+}
+
+code {
+  font-family: var(--f-code);
+  font-size: 0.875em;
+}
+
+.cadre {
+  width: var(--cadre);
+  margin-inline: auto;
+}
+
+.petit {
+  font-size: var(--t-petit);
+  color: var(--encre-2);
+}
+
+.evitement {
+  position: absolute;
+  top: var(--u);
+  left: var(--u);
+  z-index: 10;
+  padding: var(--u) calc(2 * var(--u));
+  background: var(--encre);
+  color: var(--papier);
+  transform: translateY(-200%);
+}
+
+.evitement:focus {
+  transform: none;
+}
+
+/* ------------------------------------------------------------------ Boutons */
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 0 28px;
+  border: 0;
+  background: var(--encre);
+  color: var(--papier);
+  font-family: var(--f-titre);
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: var(--ligne);
+  text-decoration: none;
+  transition: background-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.bouton:hover {
+  background: var(--encre-survol);
+}
+
+.bouton:focus-visible {
+  outline-offset: 3px;
+}
+
+.icone {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+/* Bouton de texte : copier une adresse, arrêter la bande. */
+.copier,
+.bande-pause {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--encre);
+  background: transparent;
+  color: var(--encre);
+  font-family: var(--f-titre);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.copier:hover,
+.bande-pause:hover {
+  background: var(--papier-clair);
+}
+
+/* ------------------------------------------------------------------ Marque */
+.marque {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--encre);
+  text-decoration: none;
+}
+
+.marque-signe {
+  width: 32px;
+  height: 32px;
+}
+
+.marque-nom {
+  font-family: var(--f-titre);
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 32px;
+}
+
+/* ------------------------------------------------------------------ En-tête */
+.entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  height: 80px;
+}
+
+.entete-nav {
+  display: flex;
+  gap: 32px;
+  font-family: var(--f-titre);
+  font-size: 1.1875rem;
+  font-weight: 500;
+}
+
+.entete-nav a {
+  text-decoration-line: none;
+}
+
+.entete-nav a:hover {
+  text-decoration-line: underline;
+}
+
+/* ------------------------------------------------------------------ Ouverture */
+.ouverture {
+  padding-top: 40px;
+}
+
+.ouverture-tete {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 40px 80px;
+  align-items: end;
+}
+
+.titre {
+  font-size: var(--t-titre);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+
+@supports (line-height: round(up, 10px, 8px)) {
+  .titre {
+    line-height: round(up, var(--t-titre) * 1.05, 8px);
+  }
+}
+
+.titre-ligne {
+  display: block;
+}
+
+.titre-ligne:not(.titre-fort) {
+  font-weight: 380;
+}
+
+.ouverture-note {
+  max-width: 36ch;
+}
+
+/* Le rendez-vous : le bon bouton selon le navigateur reconnu (voir public/navigateur.js). */
+.rdv {
+  margin-top: 40px;
+}
+
+.rdv-etat,
+.rdv-mobile,
+.installer-mobile,
+.selon-nav {
+  display: none;
+}
+
+:root[data-nav='firefox'] .rdv-firefox,
+:root[data-nav='chromium'] .rdv-chromium {
+  display: flex;
+}
+
+:root:not([data-nav='firefox']):not([data-nav='chromium']) .rdv-autre,
+:root[data-nav='mobile'] .rdv-mobile,
+:root[data-nav='mobile'] .installer-mobile {
+  display: block;
+}
+
+:root:not([data-nav-nom]) .selon-nav[data-nom='Chrome'],
+:root[data-nav-nom='Chrome'] .selon-nav[data-nom='Chrome'],
+:root[data-nav-nom='Brave'] .selon-nav[data-nom='Brave'],
+:root[data-nav-nom='Edge'] .selon-nav[data-nom='Edge'],
+:root[data-nav-nom='Opera'] .selon-nav[data-nom='Opera'] {
+  display: inline;
+}
+
+:root[data-nav-nom] .adresse-autres,
+:root[data-nav='mobile'] .rdv-choix {
+  display: none;
+}
+
+.rdv-firefox,
+.rdv-chromium {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 24px;
+}
+
+.rdv-texte {
+  font-size: var(--t-petit);
+}
+
+.rdv-faits {
+  color: var(--encre-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.rdv-mobile,
+.installer-mobile {
+  max-width: 40ch;
+  font-weight: 600;
+}
+
+.installer-mobile {
+  margin-bottom: 40px;
+}
+
+.rdv-choix-titre {
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.rdv-boutons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.rdv-choix .rdv-autres {
+  margin-top: 8px;
+  font-size: var(--t-petit);
+}
+
+/* ------------------------------------------------------------------ La bande */
+
+/* La bande se pose sur une ligne de grands carreaux : 80 + 40 + titre (multiple de 80
+   sur ordinateur) + 40 + bouton 56 + 64 = un multiple de 40. */
+.bande {
+  margin-top: 64px;
+}
+
+/* Le cadre de l'enregistreur : sa réglure part de son bord haut, pour que les pistes
+   tombent sur les lignes ; dans la fenêtre, c'est le papier lui-même qui défile, réglure
+   comprise (voir .bande-papier). */
+.bande-cadre {
+  display: grid;
+  grid-template-columns: var(--gouttiere) minmax(0, 1fr) var(--lecture);
+  height: 280px;
+  background-image: var(--filet-encre), var(--filet-encre), var(--reglure-h), var(--reglure-v), var(--reglure-fine-h), var(--reglure-fine-v);
+  background-size: 100% 1px, 100% 1px, var(--carreau) var(--carreau), var(--carreau) var(--carreau), var(--u) var(--u), var(--u) var(--u);
+  background-position: top, bottom, 0 0, 0 0, 0 0, 0 0;
+  background-repeat: no-repeat, no-repeat, repeat, repeat, repeat, repeat;
+}
+
+.bande-noms {
+  display: grid;
+  grid-template-rows: 40px repeat(3, 80px);
+  align-items: center;
+  font-family: var(--f-titre);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.bande-noms p:nth-child(1) { grid-row: 2; }
+.bande-noms p:nth-child(2) { grid-row: 3; }
+.bande-noms p:nth-child(3) { grid-row: 4; }
+
+.bande-fenetre {
+  grid-column: 2;
+  grid-row: 1;
+  position: relative;
+  overflow: hidden;
+  border-right: 1px solid var(--encre);
+  border-left: 1px solid var(--encre);
+}
+
+.bande-papier {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: var(--papier-clair);
+  background-image: var(--filet-encre), var(--filet-encre), var(--reglure-h), var(--reglure-v), var(--reglure-fine-h), var(--reglure-fine-v);
+  background-size: 100% 1px, 100% 1px, var(--carreau) var(--carreau), var(--carreau) var(--carreau), var(--u) var(--u), var(--u) var(--u);
+  background-position: left top, left bottom, 0 0, 0 0, 0 0, 0 0;
+  background-repeat: no-repeat, no-repeat, repeat, repeat, repeat, repeat;
+  will-change: transform;
+}
+
+.bande-lectures {
+  grid-column: 3;
+  grid-row: 1;
+  position: relative;
+  display: grid;
+  grid-template-rows: 40px repeat(3, 80px);
+  align-items: center;
+  padding-left: 16px;
+  font-family: var(--f-titre);
+  font-size: 1rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.bande-plumes {
+  position: absolute;
+  top: 0;
+  left: -6px;
+  overflow: visible;
+}
+
+.plume {
+  fill: var(--encre);
+}
+
+.plume-levee {
+  fill: var(--papier-clair);
+  stroke: var(--encre);
+  stroke-width: 1.5;
+}
+
+.lecture-heure {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.lecture-twitch span {
+  padding: 2px 6px;
+  margin-left: -6px;
+}
+
+.en-pub .lecture-twitch span {
+  background: var(--ocre);
+}
+
+.lecture-ronflux {
+  color: var(--encre-2);
+}
+
+.en-pub .lecture-ronflux {
+  color: var(--encre);
+  font-weight: 700;
+}
+
+.bande-pied {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding-top: 16px;
+}
+
+.bande-pied figcaption {
+  max-width: 72ch;
+  color: var(--encre-2);
+  font-size: var(--t-petit);
+}
+
+.bande-pause {
+  flex: none;
+}
+
+/* Tracés (bande et relevé) */
+.b-surligne {
+  fill: var(--ocre-voile);
+}
+
+.b-pub {
+  fill: var(--ocre);
+}
+
+.b-etiquette {
+  fill: var(--encre);
+  font-family: var(--f-titre);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.b-trace {
+  fill: none;
+  stroke: var(--encre);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+.b-ronflux {
+  stroke-width: 2;
+}
+
+/* ------------------------------------------------------------------ Sections */
+.section {
+  padding-top: 120px;
+}
+
+.section h2 {
+  margin-bottom: 40px;
+  font-size: var(--t-h2);
+  line-height: 1.1;
+}
+
+@supports (line-height: round(up, 10px, 8px)) {
+  .section h2 {
+    line-height: round(up, var(--t-h2) * 1.08, 8px);
+  }
+}
+
+/* ------------------------------------------------------------------ Relevé d'une heure */
+
+/* Colonnes en minutes de live : la gouttière, puis 0 à 7, 7 à 24, 24 à 46, 46 à 60.
+   Les notes et les étiquettes de pubs commencent à la minute de leur pub
+   (voir RELEVE.pubs dans src/enregistrement.js). */
+.releve-grille {
+  display: grid;
+  grid-template-columns: var(--gouttiere) 7fr 17fr 22fr 14fr;
+}
+
+.releve-graphe {
+  display: grid;
+  grid-template-columns: var(--gouttiere) minmax(0, 1fr);
+}
+
+.releve-heures {
+  position: relative;
+  grid-column: 2;
+  height: 32px;
+  color: var(--encre-2);
+  font-family: var(--f-titre);
+  font-size: var(--t-petit);
+  font-variant-numeric: tabular-nums;
+}
+
+.releve-heures span {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.releve-heures span:nth-child(1) { left: 0; transform: none; }
+.releve-heures span:nth-child(2) { left: 25%; }
+.releve-heures span:nth-child(3) { left: 50%; }
+.releve-heures span:nth-child(4) { left: 75%; }
+.releve-heures span:nth-child(5) { left: 100%; transform: translateX(-100%); }
+
+.releve-pubs {
+  grid-column: 1 / -1;
+  height: 32px;
+  font-family: var(--f-titre);
+  font-size: var(--t-petit);
+  font-weight: 600;
+}
+
+/* Chaque étiquette tient au tracé par un filet qui descend jusqu'à sa pub. */
+.releve-pubs span {
+  padding: 4px 0 0 6px;
+  border-left: 1px solid var(--encre);
+  white-space: nowrap;
+}
+
+.releve-pubs span:nth-child(1) { grid-column: 3; }
+.releve-pubs span:nth-child(2) { grid-column: 4; }
+.releve-pubs span:nth-child(3) { grid-column: 5; }
+
+/* Le relevé, tiré sur le papier des tracés, réglé depuis son bord haut. */
+.releve-pistes {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: var(--gouttiere) minmax(0, 1fr);
+  grid-template-rows: 80px 80px;
+  background-color: var(--papier-clair);
+  background-image: var(--filet-encre), var(--filet-encre), var(--reglure-h), var(--reglure-v), var(--reglure-fine-h), var(--reglure-fine-v);
+  background-size: 100% 1px, 100% 1px, var(--carreau) var(--carreau), var(--carreau) var(--carreau), var(--u) var(--u), var(--u) var(--u);
+  background-position: top, bottom, 0 0, 0 0, 0 0, 0 0;
+  background-repeat: no-repeat, no-repeat, repeat, repeat, repeat, repeat;
+}
+
+.releve-nom {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
+  font-family: var(--f-titre);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.releve-nom + .releve-nom {
+  grid-row: 2;
+}
+
+.releve-zone {
+  grid-column: 2;
+  grid-row: 1 / 3;
+}
+
+.releve-traces {
+  width: 100%;
+  height: 160px;
+}
+
+.releve-etroit {
+  display: none;
+}
+
+.releve-traces path,
+.releve-traces rect {
+  vector-effect: non-scaling-stroke;
+}
+
+.b-masque {
+  stroke-dasharray: 4 4;
+}
+
+/* Les notes, épinglées au tracé : le filet de chacune part de sa pub. */
+.notes {
+  font-size: 1rem;
+}
+
+.note {
+  grid-row: 1;
+  padding: 24px 24px 0 16px;
+  border-left: 1px solid var(--encre);
+}
+
+.note:nth-child(1) { grid-column: 3; }
+.note:nth-child(2) { grid-column: 4; }
+.note:nth-child(3) { grid-column: 5; padding-right: 0; }
+
+.note h3 {
+  font-size: 1.375rem;
+  line-height: var(--ligne);
+}
+
+.note-heure {
+  color: var(--encre-2);
+  font-family: var(--f-titre);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.note-heure + p {
+  margin-top: 8px;
+}
+
+.releve figcaption {
+  margin-top: 32px;
+  padding-left: var(--gouttiere);
+  color: var(--encre-2);
+  font-size: var(--t-petit);
+}
+
+/* ------------------------------------------------------------------ Installer */
+.poste {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 24px 40px;
+  padding: 40px 0;
+  background: var(--filet-encre) top / 100% 1px no-repeat;
+}
+
+.poste-titre {
+  font-size: 1.625rem;
+  line-height: 32px;
+}
+
+.poste-corps {
+  max-width: 760px;
+}
+
+.poste-corps > p + p,
+.poste-corps > p + .fini {
+  margin-top: 16px;
+}
+
+.poste-action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 24px;
+  margin: 24px 0;
+}
+
+.fini-titre {
+  font-family: var(--f-titre);
+  font-weight: 700;
+}
+
+.etapes {
+  margin: 32px 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: etape;
+  background: var(--filet) top / 100% 1px no-repeat;
+}
+
+.etape {
+  display: grid;
+  grid-template-columns: 40px 240px minmax(0, 1fr);
+  gap: 8px 24px;
+  padding: 24px 0;
+  background: var(--filet) bottom / 100% 1px no-repeat;
+  counter-increment: etape;
+}
+
+.etape::before {
+  content: counter(etape);
+  font-family: var(--f-titre);
+  font-size: 1.375rem;
+  font-weight: 700;
+}
+
+.etape h4 {
+  font-size: 1.25rem;
+  line-height: var(--ligne);
+}
+
+.etape-corps > p + p {
+  margin-top: 8px;
+}
+
+.etape .fini {
+  margin-top: 16px;
+}
+
+.adresse {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.adresse-code {
+  padding: 4px 10px;
+  border: 1px solid var(--reglure-forte);
+  background: var(--papier-clair);
+  line-height: 22px;
+}
+
+.poste-discret {
+  font-size: 1rem;
+}
+
+/* ------------------------------------------------------------------ Questions */
+.question {
+  display: grid;
+  grid-template-columns: 400px minmax(0, 1fr);
+  gap: 8px 40px;
+  padding: 24px 0;
+  background: var(--filet) top / 100% 1px no-repeat;
+}
+
+.question:first-child {
+  background-image: var(--filet-encre);
+}
+
+.question:last-child {
+  background-image: var(--filet), var(--filet);
+  background-position: top, bottom;
+  background-size: 100% 1px, 100% 1px;
+}
+
+.question h3 {
+  font-size: 1.3125rem;
+  font-weight: 600;
+  line-height: var(--ligne);
+}
+
+.question p {
+  max-width: 68ch;
+}
+
+/* ------------------------------------------------------------------ Pied */
+.pied {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 24px 40px;
+  margin-top: 120px;
+  padding: 40px 0 80px;
+  background: var(--filet-encre) top / 100% 1px no-repeat;
+}
+
+.pied .marque {
+  align-self: start;
+}
+
+.pied-mentions {
+  color: var(--encre-2);
+  font-size: var(--t-petit);
+}
+
+/* ------------------------------------------------------------------ Tablette */
+@media (max-width: 1023px) {
+  :root {
+    --gouttiere: 120px;
+    --lecture: 136px;
+  }
+
+  .ouverture-tete {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ouverture-note {
+    max-width: 52ch;
+  }
+
+  .poste,
+  .pied {
+    grid-template-columns: 200px minmax(0, 1fr);
+  }
+
+  .question {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .etape {
+    grid-template-columns: 40px minmax(0, 1fr);
+  }
+
+  .etape-corps {
+    grid-column: 2;
+  }
+}
+
+/* ------------------------------------------------------------------ Téléphone */
+@media (max-width: 639px) {
+  :root {
+    --gouttiere: 0px;
+    --lecture: 104px;
+  }
+
+  .entete {
+    height: 64px;
+  }
+
+  .marque-nom {
+    font-size: 1.5rem;
+  }
+
+  .entete-nav {
+    gap: 20px;
+    font-size: 1.0625rem;
+  }
+
+  .entete-lien-large {
+    display: none;
+  }
+
+  .ouverture {
+    padding-top: 24px;
+  }
+
+  .ouverture-tete {
+    gap: 24px;
+  }
+
+  .rdv {
+    margin-top: 32px;
+  }
+
+  .rdv-texte p {
+    text-wrap: balance;
+  }
+
+  .bouton {
+    font-size: 1.25rem;
+    padding: 0 24px;
+  }
+
+  .bande {
+    margin-top: 40px;
+  }
+
+  /* Les noms des pistes se posent sur le papier, en haut à gauche de chaque piste. */
+  .bande-cadre {
+    position: relative;
+  }
+
+  .bande-fenetre {
+    border-left: 0;
+  }
+
+  .bande-noms {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    align-items: start;
+    font-size: 0.8125rem;
+    line-height: 16px;
+    pointer-events: none;
+  }
+
+  .bande-noms p {
+    justify-self: start;
+    margin-top: 4px;
+    padding: 0 6px 0 0;
+    background: var(--papier-clair);
+  }
+
+  .bande-lectures {
+    padding-left: 12px;
+    font-size: 0.875rem;
+  }
+
+  .lecture-heure {
+    font-size: 1rem;
+  }
+
+  .bande-pied {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .section {
+    padding-top: 96px;
+  }
+
+  .releve-large {
+    display: none;
+  }
+
+  .releve-etroit {
+    display: block;
+  }
+
+  .releve-nom {
+    position: relative;
+    z-index: 1;
+    align-self: start;
+    justify-self: start;
+    grid-column: 2;
+    margin-top: 4px;
+    padding: 0 6px 0 0;
+    background: var(--papier-clair);
+    font-size: 0.8125rem;
+    line-height: 16px;
+  }
+
+  .releve-pubs {
+    font-size: 0.8125rem;
+  }
+
+  .notes {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+    margin-top: 24px;
+  }
+
+  .note,
+  .note:nth-child(n) {
+    grid-row: auto;
+    grid-column: 1;
+    padding: 0 0 0 16px;
+  }
+
+  .releve figcaption {
+    padding-left: 0;
+  }
+
+  .poste,
+  .pied {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .etape {
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 8px 12px;
+  }
+}

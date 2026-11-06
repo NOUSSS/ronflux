@@ -1,0 +1,8 @@
+node_modules/
+dist/
+# Fichiers à télécharger : ajoutés par l'intégration, jamais commités.
+public/telecharger/
+public/updates.json
+# Impeccable : captures et esquisses de travail (seuls le brief et le système sont suivis).
+.impeccable/review/
+.impeccable/mocks/

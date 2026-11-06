@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ronflux : les lives Twitch sans coupure pub</title>
+    <meta name="description" content="Ronflux bloque les pubs vidéo des lives Twitch, directement dans votre navigateur. Gratuit, sans compte, aucune donnée collectée.">
+    <meta name="theme-color" content="#eef2ec">
+    <meta name="color-scheme" content="light">
+    <meta property="og:title" content="Ronflux : les lives Twitch sans coupure pub">
+    <meta property="og:description" content="Ronflux bloque les pubs vidéo des lives Twitch, directement dans votre navigateur.">
+    <meta property="og:locale" content="fr_FR">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <script src="/navigateur.js"></script>
+    <script type="module" src="/src/main.js"></script>
+  </head>
+  <body>
+    <a class="evitement" href="#contenu">Aller au contenu</a>
+
+    <header class="entete cadre">
+      <a class="marque" href="/">
+        {{signe}}
+        <span class="marque-nom">Ronflux</span>
+      </a>
+      <nav class="entete-nav" aria-label="Sections">
+        <a class="entete-lien-large" href="#fonctionnement">Fonctionnement</a>
+        <a href="#installer">Installer</a>
+        <a href="#questions">Questions</a>
+      </nav>
+    </header>
+
+    <main id="contenu">
+      <section class="ouverture cadre" aria-labelledby="titre">
+        <div class="ouverture-tete">
+          <h1 class="titre" id="titre">
+            <span class="titre-ligne titre-fort">Pendant la pub, Ronflux ronfle.</span>
+            <span class="titre-ligne">Vous, vous regardez le live.</span>
+          </h1>
+          <p class="ouverture-note">Une pub au lancement du live, d’autres en plein milieu : on se croirait à la télé. Ronflux bloque ces pubs sur les lives Twitch, directement dans votre navigateur. Gratuit, sans compte, aucune donnée collectée.</p>
+        </div>
+
+        <div class="rdv">
+          <div class="rdv-etat rdv-firefox">
+            <a class="bouton" href="/telecharger/ronflux-firefox.xpi">
+              <svg class="icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v12m0 0-5.5-5.5M12 15l5.5-5.5M4 20.5h16"/></svg>
+              Installer pour Firefox
+            </a>
+            <div class="rdv-texte">
+              <p class="rdv-faits">Version {{version}} · Firefox {{firefoxMin}} ou plus récent, Zen et dérivés</p>
+              <p class="rdv-autres">Autre navigateur : <a href="#chrome">Chrome, Brave, Edge, Opera</a> ou <a href="#userscript">userscript</a></p>
+            </div>
+          </div>
+
+          <div class="rdv-etat rdv-chromium">
+            <!-- si:cws -->
+            <a class="bouton" href="{{chromeWebStore}}">
+              <svg class="icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v12m0 0-5.5-5.5M12 15l5.5-5.5M4 20.5h16"/></svg>
+              <span>Installer pour <span class="selon-nav" data-nom="Chrome">Chrome</span><span class="selon-nav" data-nom="Brave">Brave</span><span class="selon-nav" data-nom="Edge">Edge</span><span class="selon-nav" data-nom="Opera">Opera</span></span>
+            </a>
+            <div class="rdv-texte">
+              <p class="rdv-faits">Version {{version}} · depuis le Chrome Web Store</p>
+              <p class="rdv-autres">Autre navigateur : <a href="#firefox">Firefox</a> ou <a href="#userscript">userscript</a></p>
+            </div>
+            <!-- /si:cws -->
+            <!-- sinon:cws -->
+            <a class="bouton" href="/telecharger/ronflux-chrome.zip" download>
+              <svg class="icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v12m0 0-5.5-5.5M12 15l5.5-5.5M4 20.5h16"/></svg>
+              <span>Télécharger pour <span class="selon-nav" data-nom="Chrome">Chrome</span><span class="selon-nav" data-nom="Brave">Brave</span><span class="selon-nav" data-nom="Edge">Edge</span><span class="selon-nav" data-nom="Opera">Opera</span></span>
+            </a>
+            <div class="rdv-texte">
+              <p class="rdv-faits">Version {{version}} · à charger en mode développeur, <a href="#chrome">en quatre étapes</a></p>
+              <p class="rdv-autres">Autre navigateur : <a href="#firefox">Firefox</a> ou <a href="#userscript">userscript</a></p>
+            </div>
+            <!-- /sinon:cws -->
+          </div>
+
+          <div class="rdv-etat rdv-autre">
+            <p class="rdv-mobile">Ronflux s’installe sur un navigateur d’ordinateur : ouvrez cette page sur le vôtre, avec <a href="#firefox">Firefox</a> ou <a href="#chrome">Chrome, Brave, Edge, Opera</a>.</p>
+            <div class="rdv-choix">
+              <p class="rdv-choix-titre">Ronflux existe pour deux familles de navigateurs :</p>
+              <div class="rdv-boutons">
+                <a class="bouton" href="#firefox">Firefox</a>
+                <a class="bouton" href="#chrome">Chrome, Brave, Edge, Opera</a>
+              </div>
+              <p class="rdv-autres">Ou le <a href="#userscript">userscript</a> pour Tampermonkey.</p>
+            </div>
+          </div>
+        </div>
+
+        <figure class="bande en-pub" data-bande>
+          <div class="bande-cadre">
+            <div class="bande-noms" aria-hidden="true">
+              <p>Twitch diffuse</p>
+              <p>Vous voyez</p>
+              <p>Ronflux</p>
+            </div>
+            <div class="bande-fenetre">{{bande}}</div>
+            <div class="bande-lectures" aria-hidden="true">
+              {{plumes}}
+              <p class="lecture-heure" data-lecture="heure">{{heure}}</p>
+              <p class="lecture-twitch"><span data-lecture="twitch">Une pub</span></p>
+              <p>Le live</p>
+              <p class="lecture-ronflux" data-lecture="ronflux">Pub bloquée</p>
+            </div>
+          </div>
+          <div class="bande-pied">
+            <figcaption>Démonstration accélérée. Quand Twitch glisse une pub dans le live, Ronflux passe sur une autre diffusion du même live : ce que vous voyez ne s’interrompt pas.</figcaption>
+            <button class="bande-pause" type="button" data-pause hidden>Pause</button>
+          </div>
+        </figure>
+      </section>
+
+      <section class="section cadre" id="fonctionnement" aria-labelledby="titre-fonctionnement">
+        <h2 id="titre-fonctionnement">Une heure de live, avec et sans Ronflux</h2>
+
+        <figure class="releve">
+          <div class="releve-graphe" aria-hidden="true">
+            <div class="releve-heures">
+              <span>20 h</span><span>20 h 15</span><span>20 h 30</span><span>20 h 45</span><span>21 h</span>
+            </div>
+            <div class="releve-pubs releve-grille">
+              <span>Pub, 30 s</span><span>Pub, 1 min 30</span><span>Pub, 3 min</span>
+            </div>
+            <div class="releve-pistes">
+              <p class="releve-nom">Sans Ronflux</p>
+              <p class="releve-nom">Avec Ronflux</p>
+              <div class="releve-zone">{{releve}}</div>
+            </div>
+          </div>
+
+          <div class="notes releve-grille">
+            <div class="note">
+              <h3>La pub est cousue dans la vidéo</h3>
+              <p class="note-heure">20 h 07, pub de 30 s</p>
+              <p>Twitch n’envoie pas ses pubs depuis un site publicitaire : il les insère dans la vidéo du live elle-même. Un bloqueur de pub classique ne peut donc rien faire.</p>
+            </div>
+            <div class="note">
+              <h3>Ronflux change de diffusion</h3>
+              <p class="note-heure">20 h 24, pub de 1 min 30</p>
+              <p>Au début de chaque pub, Ronflux passe le lecteur sur une autre diffusion du même live, que Twitch envoie sans pub, à la même qualité quand elle existe. Le lecteur affiche « Pub bloquée » et le live continue.</p>
+            </div>
+            <div class="note">
+              <h3>Sinon, il la cache</h3>
+              <p class="note-heure">20 h 46, pub de 3 min</p>
+              <p>S’il ne trouve aucune diffusion sans pub, Ronflux masque l’image et coupe le son jusqu’à la fin de la pub, et cherche de nouveau toutes les dix secondes.</p>
+            </div>
+          </div>
+
+          <figcaption>Exemple d’une heure de live. Le nombre et la durée des pubs varient selon la chaîne.</figcaption>
+        </figure>
+      </section>
+
+      <section class="section cadre" id="installer" aria-labelledby="titre-installer">
+        <h2 id="titre-installer">Installer Ronflux</h2>
+        <p class="installer-mobile">Ces fichiers s’installent sur un navigateur d’ordinateur : ouvrez cette page sur le vôtre pour les télécharger.</p>
+
+        <div class="poste" id="firefox">
+          <h3 class="poste-titre">Firefox, Zen et dérivés</h3>
+          <div class="poste-corps">
+            <!-- si:maj-firefox -->
+            <p>Firefox vous demande d’abord d’autoriser ce site, puis de confirmer l’ajout de Ronflux. Les mises à jour se font ensuite toutes seules.</p>
+            <!-- /si:maj-firefox -->
+            <!-- sinon:maj-firefox -->
+            <p>Firefox vous demande d’abord d’autoriser ce site, puis de confirmer l’ajout de Ronflux. Pour passer à une nouvelle version, installez-la depuis cette page : elle remplace l’ancienne.</p>
+            <!-- /sinon:maj-firefox -->
+            <div class="poste-action">
+              <a class="bouton" href="/telecharger/ronflux-firefox.xpi">
+                <svg class="icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v12m0 0-5.5-5.5M12 15l5.5-5.5M4 20.5h16"/></svg>
+                Installer pour Firefox
+              </a>
+              <p class="petit">Firefox {{firefoxMin}} ou plus récent.</p>
+            </div>
+            <p class="fini"><span class="fini-titre">Une fois fait :</span> rechargez vos onglets Twitch. À la prochaine pub, le lecteur affiche « Pub bloquée ».</p>
+          </div>
+        </div>
+
+        <div class="poste" id="chrome">
+          <h3 class="poste-titre">Chrome, Brave, Edge, Opera</h3>
+          <div class="poste-corps">
+            <!-- si:cws -->
+            <p>Ronflux a sa page sur le Chrome Web Store, qui l’installe et le tient à jour.</p>
+            <div class="poste-action">
+              <a class="bouton" href="{{chromeWebStore}}">Installer depuis le Chrome Web Store</a>
+            </div>
+            <p>Vous pouvez aussi l’installer sans passer par le store, en mode développeur :</p>
+            <!-- /si:cws -->
+            <!-- sinon:cws -->
+            <p>En attendant sa page sur le Chrome Web Store, Ronflux s’installe en mode développeur, en quatre étapes.</p>
+            <!-- /sinon:cws -->
+            <div class="poste-action">
+              <a class="bouton" href="/telecharger/ronflux-chrome.zip" download>
+                <svg class="icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v12m0 0-5.5-5.5M12 15l5.5-5.5M4 20.5h16"/></svg>
+                Télécharger le ZIP
+              </a>
+            </div>
+
+            <ol class="etapes">
+              <li class="etape">
+                <h4>Décompressez le fichier</h4>
+                <div class="etape-corps">
+                  <p>Placez le dossier obtenu à un endroit où vous le garderez : le navigateur le relit à chaque démarrage.</p>
+                  <p class="fini"><span class="fini-titre">Une fois fait :</span> un dossier ronflux-chrome, qui contient le fichier manifest.json.</p>
+                </div>
+              </li>
+              <li class="etape">
+                <h4>Ouvrez la page des extensions</h4>
+                <div class="etape-corps">
+                  <p>Copiez cette adresse dans la barre d’adresse :</p>
+                  <p class="adresse">
+                    <code class="adresse-code" id="adresse-extensions"><span class="selon-nav" data-nom="Chrome">chrome</span><span class="selon-nav" data-nom="Brave">brave</span><span class="selon-nav" data-nom="Edge">edge</span><span class="selon-nav" data-nom="Opera">opera</span>://extensions</code>
+                    <button class="copier" type="button" data-copier="adresse-extensions" hidden>Copier</button>
+                  </p>
+                  <p class="adresse-autres petit">Brave : brave://extensions, Edge : edge://extensions, Opera : opera://extensions.</p>
+                  <p class="fini"><span class="fini-titre">Une fois fait :</span> la page Extensions est ouverte.</p>
+                </div>
+              </li>
+              <li class="etape">
+                <h4>Activez le mode développeur</h4>
+                <div class="etape-corps">
+                  <p>Cliquez sur l’interrupteur « Mode développeur ».</p>
+                  <p class="fini"><span class="fini-titre">Une fois fait :</span> de nouveaux boutons apparaissent en haut de la page.</p>
+                </div>
+              </li>
+              <li class="etape">
+                <h4>Chargez Ronflux</h4>
+                <div class="etape-corps">
+                  <p>Cliquez sur « Charger l’extension non empaquetée » et choisissez le dossier ronflux-chrome, celui qui contient le fichier manifest.json.</p>
+                  <p class="fini"><span class="fini-titre">Une fois fait :</span> Ronflux apparaît dans la liste. Rechargez vos onglets Twitch.</p>
+                </div>
+              </li>
+            </ol>
+
+            <p class="petit">Dans ce mode, pas de mise à jour automatique : pour une nouvelle version, remplacez le contenu du dossier par celui du nouveau ZIP, puis cliquez sur la flèche de rechargement de Ronflux dans la page des extensions.</p>
+          </div>
+        </div>
+
+        <div class="poste poste-discret" id="userscript">
+          <h3 class="poste-titre">Userscript</h3>
+          <div class="poste-corps">
+            <p>Vous utilisez déjà Tampermonkey ou Violentmonkey ? Ronflux existe aussi en userscript : <a href="/telecharger/ronflux.user.js">installer le userscript</a>. Dans Tampermonkey, réglez le mode d’injection sur « Instantané » (dans les paramètres, en mode de configuration « Avancé »).</p>
+            <p class="petit">Installez une seule version de Ronflux : si l’extension et le userscript sont présents, le second se désactive.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section cadre" id="questions" aria-labelledby="titre-questions">
+        <h2 id="titre-questions">Questions</h2>
+
+        <div class="questions">
+          <div class="question">
+            <h3>Ronflux collecte-t-il des données ?</h3>
+            <p>Non. Ronflux n’a ni compte, ni serveur, ni statistiques : tout se passe dans votre navigateur, et l’extension n’agit que sur twitch.tv. Ce site non plus ne collecte rien : pas de cookie, pas de mesure d’audience.</p>
+          </div>
+          <div class="question">
+            <h3>Comment se font les mises à jour ?</h3>
+            <!-- si:maj-firefox -->
+            <p>Avec Firefox, toutes seules. Avec Chrome, Brave, Edge ou Opera en mode développeur, à la main : téléchargez le nouveau ZIP, remplacez le contenu du dossier, puis rechargez Ronflux depuis la page des extensions. Le userscript, lui, se met à jour par Tampermonkey ou Violentmonkey.</p>
+            <!-- /si:maj-firefox -->
+            <!-- sinon:maj-firefox -->
+            <p>Avec Firefox, installez la nouvelle version depuis cette page : elle remplace l’ancienne, sans rien perdre. Avec Chrome, Brave, Edge ou Opera en mode développeur, à la main : téléchargez le nouveau ZIP, remplacez le contenu du dossier, puis rechargez Ronflux depuis la page des extensions. Le userscript, lui, se met à jour par Tampermonkey ou Violentmonkey.</p>
+            <!-- /sinon:maj-firefox -->
+          </div>
+          <div class="question">
+            <h3>Une pub est passée quand même : que faire ?</h3>
+            <p>Rechargez la page du live. Twitch change souvent sa façon de diffuser les pubs : si elles reviennent sur toutes les chaînes, vérifiez que vous avez la dernière version de Ronflux. Il arrive aussi que toutes les diffusions d’un live reçoivent la même pub pendant quelques dizaines de secondes ; Ronflux masque alors l’image et coupe le son jusqu’à la fin.</p>
+          </div>
+          <div class="question">
+            <h3>Ça marche sur les rediffusions et les clips ?</h3>
+            <p>Non, seulement sur les lives.</p>
+          </div>
+          <div class="question">
+            <h3>L’image change-t-elle pendant une pub ?</h3>
+            <p>La qualité peut baisser un moment si la diffusion sans pub ne propose pas la même. À la fin de la pub, le lecteur se recharge brièvement.</p>
+          </div>
+          <div class="question">
+            <h3>Faut-il l’extension et le userscript ?</h3>
+            <p>Non, une seule version suffit. Si les deux sont installées, la seconde se désactive d’elle-même.</p>
+          </div>
+          <div class="question">
+            <h3>Ronflux est-il lié à Twitch ?</h3>
+            <p>Non, Ronflux n’est pas affilié à Twitch. Il dépend de la façon dont Twitch diffuse ses lives aujourd’hui : si Twitch change son lecteur, Ronflux peut cesser de marcher jusqu’à sa version suivante.</p>
+          </div>
+          <div class="question">
+            <h3>Et les streamers ?</h3>
+            <p>Les pubs font partie de leurs revenus. Pour les soutenir sans pub, Twitch propose Turbo et les abonnements aux chaînes.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="pied cadre">
+      <a class="marque" href="/">
+        {{signe}}
+        <span class="marque-nom">Ronflux</span>
+      </a>
+      <div class="pied-mentions">
+        <p>Ronflux n’est pas affilié à Twitch. Twitch est une marque de Twitch Interactive, Inc.</p>
+        <p>Ce site ne dépose aucun cookie et ne charge rien d’extérieur. Version {{version}}.</p>
+      </div>
+    </footer>
+  </body>
+</html>
