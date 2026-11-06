@@ -74,7 +74,9 @@ Bloque, uniquement pour les requêtes émises par les pages twitch.tv, huit doma
 Le script de contenu doit s'exécuter dans les pages twitch.tv dès le début de leur chargement pour envelopper le Web Worker du lecteur vidéo : c'est là que les playlists du live sont lues, et que celles qui contiennent une publicité sont remplacées par celles d'un flux sans publicité. L'extension n'agit sur aucun autre site.
 ```
 
-**Utilisez-vous du code distant ?** Non.
+**Utilisez-vous du code distant ?** Non : cocher « Non, je n'utilise pas "code distant" ». Le
+formulaire ne demande alors pas de justification ; le texte ci-dessous sert si l'examen pose la
+question.
 
 ```
 Tout le code de l'extension est dans le paquet. Le script de contenu exécute le worker du lecteur que la page Twitch charge elle-même, en y ajoutant le code de l'extension ; il ne télécharge et n'exécute aucun autre code.
@@ -93,9 +95,18 @@ Cocher les trois attestations :
 - je n'utilise ni ne transfère les données des utilisateurs pour déterminer leur solvabilité ou
   pour accorder des prêts.
 
-**Règles de confidentialité** : aucune URL n'est exigée quand aucune donnée n'est collectée. Si
-le formulaire en demande une, donner une page du site qui reprend le paragraphe « Utilisation des
-données » ci-dessus.
+**Règles de confidentialité** : le formulaire exige une URL. Donner
+`https://ronflux.feitanx.com/#donnees`, la question « Ronflux collecte-t-il des données ? » du
+site.
+
+## Compte
+
+Dans ☰ → Paramètres, l'adresse e-mail de contact de l'éditeur est obligatoire, et doit être
+validée par le lien que Google y envoie : `ronflux@feitanx.com`, qui arrive sur
+`mail.feitanx.com`.
+
+« Envoyer pour examen » reste grisé tant que le brouillon a des modifications non enregistrées.
+« Pourquoi ne puis-je pas envoyer cet élément ? » donne la liste de ce qui manque.
 
 ## Distribution
 
