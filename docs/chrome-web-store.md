@@ -44,12 +44,13 @@ Ronflux n'est ni affilié à Twitch ni approuvé par Twitch.
 
 **Catégorie** : au choix, dans la famille divertissement.
 
-**Visuels** (à refaire avec le logo définitif) :
+**Visuels** : `node tools/visuels-store.mjs <adresse du site>` les tire du logo et du site
+dans `dist/store/` (à refaire après un changement de logo ou de page d'accueil) :
 
-- icône 128 × 128 : `dist/chrome/icons/icon-128.png` (tirée de `extension/icon.svg` au build) ;
-- au moins une capture d'écran 1280 × 800 (ou 640 × 400) : un live Twitch avec la notification
-  « Pub bloquée » dans le lecteur ;
-- petite vignette promotionnelle 440 × 280.
+- `icone-128.png` : icône de la fiche, le logo en 96 × 96 avec 16 px de marge transparente ;
+- `capture-1-1280x800.png` et `capture-2-1280x800.png` : le haut de la page d'accueil (la
+  bande, au milieu d'une pub) et le relevé d'une heure de live ;
+- `vignette-440x280.png` : petite vignette promotionnelle.
 
 **Site web** : l'adresse du site (`siteUrl` de `distribution.json`).
 

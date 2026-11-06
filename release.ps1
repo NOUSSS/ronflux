@@ -99,6 +99,11 @@ function Exit-ToolEnv($State) {
   foreach ($name in $State.Saved.Keys) { Set-Item -LiteralPath "Env:\$name" -Value $State.Saved[$name] }
 }
 
+# Un JSON sous une forme comparable : mêmes valeurs, même ordre des clés, mêmes octets.
+function ConvertTo-CanonicalJson([byte[]] $Bytes) {
+  $Utf8NoBom.GetString($Bytes).TrimStart([char]0xFEFF) | ConvertFrom-Json | ConvertTo-Json -Depth 20 -Compress
+}
+
 # Vérifie un .xpi signé : signature AMO présente, et contenu identique, fichier par fichier, à
 # dist/firefox (ou, sans build, au moins même identifiant et même version).
 function Test-SignedXpi([byte[]] $Bytes, [string] $ExpectedVersion, [string] $ExpectedId, [string] $BuiltDir) {
@@ -124,6 +129,12 @@ function Test-SignedXpi([byte[]] $Bytes, [string] $ExpectedVersion, [string] $Ex
   foreach ($name in $signedNames) {
     if (-not $built.ContainsKey($name)) { $diff += "$name (en trop)"; continue }
     $a = $entries[$name]; $b = [IO.File]::ReadAllBytes($built[$name])
+    if ($name -eq 'manifest.json') {
+      # AMO réécrit le manifeste en le signant (les accents deviennent é, par exemple) :
+      # on compare son contenu JSON, pas ses octets.
+      if ((ConvertTo-CanonicalJson $a) -ne (ConvertTo-CanonicalJson $b)) { $diff += "$name (différent)" }
+      continue
+    }
     if ($a.Length -ne $b.Length -or [Convert]::ToBase64String($a) -ne [Convert]::ToBase64String($b)) { $diff += "$name (différent)" }
   }
   foreach ($name in $built.Keys) { if ($signedNames -notcontains $name) { $diff += "$name (absent)" } }
@@ -255,8 +266,8 @@ try {
 
   # --- 3. Signature ---------------------------------------------------------------------------
   if ($SignedXpi) {
-    Test-SignedXpi $signedBytes $target $firefoxId $ffDir
     $resume = "release.ps1 -SignedXpi `"$SignedXpi`""
+    Test-SignedXpi $signedBytes $target $firefoxId $ffDir
     Write-Host "3. Signature déjà faite : $SignedXpi"
   } else {
     if (Test-Path $amoDir) { Remove-Item -Recurse -Force $amoDir }
@@ -277,9 +288,10 @@ try {
     }
     $signed = @(Get-ChildItem -LiteralPath $amoDir -Filter '*.xpi' -File)
     if ($signed.Count -ne 1) { throw "$($signed.Count) fichier(s) .xpi dans dist/amo/ après la signature, un seul attendu." }
+    # Dès ici, AMO a signé cette version : une reprise ne doit plus la lui renvoyer.
+    $resume = "release.ps1 -SignedXpi `"$($signed[0].FullName)`""
     $signedBytes = [IO.File]::ReadAllBytes($signed[0].FullName)
     Test-SignedXpi $signedBytes $target $firefoxId $ffDir
-    $resume = "release.ps1 -SignedXpi `"$($signed[0].FullName)`""
     Write-Host "   signé : $($signed[0].Name)"
   }
 
