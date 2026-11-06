@@ -1,0 +1,862 @@
+/*
+ * Ronflux : une affiche tirée en sérigraphie.
+ * Papier rose, deux encres à plat (bleu nuit, rouge) en surimpression, une troisième encre
+ * (jaune fluo) réservée au seul bouton d'installation. Pas d'ombre, pas d'arrondi.
+ * Tout se règle sur les jetons ci-dessous.
+ */
+
+/* Polices auto-hébergées (fichiers servis par le site, aucun appel extérieur). */
+@font-face {
+  font-family: 'Affiche';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: block;
+  src: url('@fontsource-variable/big-shoulders-stencil/files/big-shoulders-stencil-latin-opsz-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Affiche';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: block;
+  src: url('@fontsource-variable/big-shoulders-stencil/files/big-shoulders-stencil-latin-ext-opsz-normal.woff2') format('woff2-variations');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Texte';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: block;
+  src: url('@fontsource-variable/archivo/files/archivo-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Texte';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: block;
+  src: url('@fontsource-variable/archivo/files/archivo-latin-ext-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* ------------------------------------------------------------------ Jetons */
+:root {
+  /* Papier et encres */
+  --papier: #ff8fb8;
+  --encre: #13286b;
+  --encre-douce: color-mix(in oklab, var(--encre) 86%, var(--papier));
+  --encre-trame: color-mix(in oklab, var(--encre) 12%, var(--papier));
+  --encre-rouge: #e3201b;
+  --encre-jaune: #f2ff3d;
+  /* Bleu sous rouge, en multiplication (#13286b × #e3201b) : là où les deux encres se
+     chevauchent. */
+  --encre-surimpression: #11050b;
+
+  /* Typographie */
+  --f-affiche: 'Affiche', 'Arial Narrow', sans-serif;
+  --f-texte: 'Texte', system-ui, sans-serif;
+  --f-code: ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace;
+  --t-petit: 0.9375rem;
+  --t-texte: 1.0625rem;
+  --t-tract: clamp(1.125rem, 1rem + 0.4vw, 1.3125rem);
+  --t-h3: 1.25rem;
+  --t-bouton: clamp(1.5rem, 1.2rem + 0.8vw, 2rem);
+  --t-chiffre: 3.25rem;
+  --t-h2: clamp(2.75rem, 1.4rem + 5vw, 6rem);
+  --t-slogan: clamp(4.25rem, min(21vw, 22svh), 16rem);
+  --t-marque-pied: clamp(5rem, 30vw, 34rem);
+
+  /* Espaces */
+  --e-1: 0.25rem;
+  --e-2: 0.5rem;
+  --e-3: 0.75rem;
+  --e-4: 1rem;
+  --e-5: 1.5rem;
+  --e-6: 2rem;
+  --e-7: 3rem;
+  --e-8: 4rem;
+  --e-9: 6rem;
+  --e-10: 9rem;
+  --marge: clamp(1rem, 4vw, 4rem);
+  --gouttiere: clamp(1rem, 2vw, 2rem);
+  --entete-h: 4.5rem;
+
+  /* Formes */
+  --rayon: 0;
+  --trait: 3px;
+  --trait-fin: 1.5px;
+  --repere: 14px;
+
+  /* Mouvement */
+  --sortie: cubic-bezier(0.16, 1, 0.3, 1);
+  --duree-courte: 160ms;
+  --duree-longue: 900ms;
+  --duree-lecture: 24s;
+
+  /* Ligne de repérage : début de la colonne 6 sur 12 (7 sur tablette). */
+  --ligne: 6;
+}
+
+/* ------------------------------------------------------------------ Base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light;
+  scrollbar-color: var(--encre) var(--papier);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  overflow-x: clip;
+  background: url('./textures/grain.svg') 0 0 / 240px 240px, var(--papier);
+  color: var(--encre);
+  font: 400 var(--t-texte) / 1.55 var(--f-texte);
+  font-synthesis: none;
+}
+
+h1, h2, h3, h4, p, ol, figure {
+  margin: 0;
+}
+
+p,
+figcaption {
+  text-wrap: pretty;
+}
+
+::selection {
+  background: var(--encre);
+  color: var(--papier);
+}
+
+:focus-visible {
+  outline: var(--trait) solid var(--encre);
+  outline-offset: 3px;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: var(--trait-fin);
+  text-underline-offset: 0.2em;
+  transition: text-decoration-thickness var(--duree-courte) var(--sortie);
+}
+
+a:hover {
+  text-decoration-thickness: var(--trait);
+}
+
+code {
+  font-family: var(--f-code);
+}
+
+.evitement {
+  position: absolute;
+  left: var(--marge);
+  top: -10rem;
+  z-index: 2;
+  padding: var(--e-2) var(--e-4);
+  background: var(--encre);
+  color: var(--papier);
+}
+
+.evitement:focus {
+  top: var(--e-2);
+}
+
+.petit {
+  font-size: var(--t-petit);
+  color: var(--encre-douce);
+}
+
+/* ------------------------------------------------------------------ Mise en page */
+.cadre {
+  max-width: 112rem;
+  margin-inline: auto;
+  padding-inline: var(--marge);
+}
+
+.grille {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: var(--gouttiere);
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --ligne: 7;
+    --repere: 28px;
+  }
+
+  .grille {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  /* Ce qui s'accroche à gauche de la ligne de repérage, et ce qui part d'elle. */
+  .avant-ligne,
+  .rdv,
+  .rang-titre,
+  .question h3,
+  .pied-mentions > :first-child {
+    grid-column: 1 / var(--ligne);
+  }
+
+  .apres-ligne,
+  .affiche-tract,
+  .rang-corps,
+  .question p,
+  .pied-mentions > :last-child {
+    grid-column: var(--ligne) / -1;
+  }
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --ligne: 6;
+  }
+
+  .affiche-tract,
+  .question p {
+    grid-column: var(--ligne) / 12;
+  }
+}
+
+/* ------------------------------------------------------------------ Bouton d'installation */
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  padding: 0.5em 0.85em 0.45em;
+  border-radius: var(--rayon);
+  background: var(--encre-jaune);
+  color: var(--encre);
+  font: 800 var(--t-bouton) / 1 var(--f-affiche);
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition:
+    background-color var(--duree-courte) var(--sortie),
+    color var(--duree-courte) var(--sortie);
+}
+
+.bouton:hover {
+  background: var(--encre);
+  color: var(--encre-jaune);
+}
+
+.icone {
+  flex: none;
+  width: 0.9em;
+  height: 0.9em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: square;
+}
+
+/* Bouton secondaire (copier une adresse) */
+.copier {
+  padding: 0.45em 0.8em;
+  border: var(--trait-fin) solid var(--encre);
+  border-radius: var(--rayon);
+  background: transparent;
+  color: var(--encre);
+  font: 600 var(--t-petit) / 1 var(--f-texte);
+  cursor: pointer;
+  transition:
+    background-color var(--duree-courte) var(--sortie),
+    color var(--duree-courte) var(--sortie);
+}
+
+.copier:hover {
+  background: var(--encre);
+  color: var(--papier);
+}
+
+/* ------------------------------------------------------------------ En-tête */
+.entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-5);
+  min-height: var(--entete-h);
+}
+
+.marque {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-2);
+  font: 900 2rem / 1 var(--f-affiche);
+  letter-spacing: 0.01em;
+  text-decoration: none;
+}
+
+.marque-signe:empty {
+  display: none;
+}
+
+.entete-nav {
+  display: flex;
+  gap: var(--e-5);
+  font-weight: 600;
+}
+
+.entete-nav a {
+  padding-block: var(--e-2);
+}
+
+/* ------------------------------------------------------------------ Affiche (premier écran) */
+.affiche {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-7);
+  padding-block: var(--e-2) var(--e-8);
+  overflow-x: clip;
+}
+
+@media (min-width: 64rem) and (min-height: 40rem) {
+  .affiche {
+    min-height: calc(100svh - var(--entete-h));
+    justify-content: space-between;
+  }
+}
+
+.slogan {
+  position: relative;
+  font: 900 var(--t-slogan) / 0.8 var(--f-affiche);
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+}
+
+/* Le titre h1 reprend la typographie de l'affiche (pas celle d'un h1 par défaut). */
+.slogan-texte {
+  font: inherit;
+}
+
+.slogan-ligne {
+  display: block;
+  white-space: nowrap;
+}
+
+/* Les lignes descendent en escalier jusqu'à la ligne de repérage. */
+@media (min-width: 48rem) {
+  .slogan-ligne:nth-child(2) {
+    margin-left: calc(2 * ((100% - 11 * var(--gouttiere)) / 12 + var(--gouttiere)));
+  }
+
+  .slogan-ligne:nth-child(3) {
+    margin-left: calc((var(--ligne) - 1) * ((100% - 11 * var(--gouttiere)) / 12 + var(--gouttiere)));
+  }
+}
+
+/*
+ * Bande rouge tirée par-dessus la deuxième ligne. Comme en sérigraphie, l'écran rouge est
+ * évidé là où passent les lettres bleues, et cet évidement est un peu hors repérage : d'un
+ * côté de chaque lettre, un filet de papier ; de l'autre, le rouge chevauche le bleu.
+ * Deux copies du slogan, visibles seulement dans la bande, le dessinent :
+ *  - .slogan-trou : l'évidement (couleur papier), décalé de --calage ; son ombre, ramenée
+ *    à la place des lettres, donne la surimpression bleu sous rouge ;
+ *  - .slogan-reprise : les lettres en bleu, en « darken », qui ne repassent en bleu que
+ *    le papier de l'évidement et laissent la surimpression plus sombre intacte.
+ */
+@property --calage-x {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --calage-y {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Le rouge passe sous les lettres, les copies par-dessus : un seul bord adouci par endroit,
+   sans liseré là où le bord de la bande croise une lettre. */
+.slogan {
+  --debord: calc(var(--marge) + 2rem);
+  isolation: isolate;
+}
+
+.slogan::before,
+.slogan-bande {
+  position: absolute;
+  top: 0.84em;
+  height: 0.66em;
+  left: calc(-1 * var(--debord));
+  right: calc(-1 * var(--debord));
+  rotate: -1.6deg;
+}
+
+.slogan::before {
+  content: '';
+  z-index: -1;
+  background: url('./textures/grain.svg') 0 0 / 240px 240px, var(--encre-rouge);
+}
+
+/* Défaut de repérage de l'écran rouge par rapport au bleu : proportionné au corps du
+   slogan, entre 1,5 et 3 px. Déclaré ici pour que em soit celui du slogan. */
+.slogan-bande {
+  --calage-x: clamp(1.5px, 0.0125em, 3px);
+  --calage-y: clamp(0.75px, 0.005em, 1.25px);
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
+  animation: calage var(--duree-longue) var(--sortie) 0.15s both;
+}
+
+/* Le contenu reprend la place exacte du slogan : décalé d'autant que la bande déborde, et
+   tourné en sens inverse autour du même centre. */
+.slogan-bande-contenu {
+  position: absolute;
+  top: -0.84em;
+  left: var(--debord);
+  width: calc(100% - 2 * var(--debord));
+  display: grid;
+  rotate: 1.6deg;
+  transform-origin: 50% 1.17em;
+}
+
+.slogan-trou,
+.slogan-reprise {
+  grid-area: 1 / 1;
+}
+
+.slogan-trou {
+  color: var(--papier);
+  translate: var(--calage-x) var(--calage-y);
+  text-shadow: calc(-1 * var(--calage-x)) calc(-1 * var(--calage-y)) 0 var(--encre-surimpression);
+}
+
+.slogan-reprise {
+  color: var(--encre);
+  mix-blend-mode: darken;
+}
+
+/* Au chargement, l'écran rouge se cale : l'évidement glisse jusqu'à son léger défaut. */
+@keyframes calage {
+  from {
+    --calage-x: 0.3em;
+    --calage-y: 0.05em;
+  }
+}
+
+.affiche-pied {
+  position: relative;
+  align-items: end;
+  row-gap: var(--e-6);
+}
+
+.affiche-tract {
+  order: -1;
+  max-width: 34ch;
+  font-size: var(--t-tract);
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+@media (min-width: 48rem) {
+  .affiche-tract {
+    order: 0;
+  }
+}
+
+/*
+ * Croix de repérage : une en tête de chaque partie, toutes sur la même ligne verticale
+ * (début de la colonne --ligne). Sur téléphone, une seule colonne : la croix se range au
+ * milieu de la marge.
+ */
+.affiche-pied::before,
+.section::before,
+.pied::before {
+  content: '';
+  position: absolute;
+  width: var(--repere);
+  height: var(--repere);
+  background: var(--encre);
+  -webkit-mask: url('./textures/repere.svg') center / contain no-repeat;
+  mask: url('./textures/repere.svg') center / contain no-repeat;
+  pointer-events: none;
+}
+
+/* Dans l'écart entre le slogan et le pied de l'affiche. */
+.affiche-pied::before {
+  top: calc(-1 * (var(--e-7) + var(--repere)) / 2);
+  left: calc(-1 * (var(--marge) + var(--repere)) / 2);
+}
+
+/* Au milieu de la marge haute de la partie. */
+.section::before,
+.pied::before {
+  top: calc((var(--e-10) - var(--repere)) / 2);
+  left: calc((var(--marge) - var(--repere)) / 2);
+}
+
+@media (min-width: 48rem) {
+  .affiche-pied::before {
+    left: calc((var(--ligne) - 1) * ((100% - 11 * var(--gouttiere)) / 12 + var(--gouttiere)) - var(--repere) / 2);
+  }
+
+  /* .section et .pied ont la marge en padding : la grille commence après elle. */
+  .section::before,
+  .pied::before {
+    left: calc(var(--marge) + (var(--ligne) - 1) * ((100% - 2 * var(--marge) - 11 * var(--gouttiere)) / 12 + var(--gouttiere)) - var(--repere) / 2);
+  }
+}
+
+/* Le bon bouton selon le navigateur reconnu (voir public/navigateur.js). */
+.rdv-etat,
+.rdv-mobile,
+.selon-nav {
+  display: none;
+}
+
+:root[data-nav='firefox'] .rdv-firefox,
+:root[data-nav='chromium'] .rdv-chromium,
+:root:not([data-nav='firefox']):not([data-nav='chromium']) .rdv-autre,
+:root[data-nav='mobile'] .rdv-mobile {
+  display: block;
+}
+
+:root:not([data-nav-nom]) .selon-nav[data-nom='Chrome'],
+:root[data-nav-nom='Chrome'] .selon-nav[data-nom='Chrome'],
+:root[data-nav-nom='Brave'] .selon-nav[data-nom='Brave'],
+:root[data-nav-nom='Edge'] .selon-nav[data-nom='Edge'],
+:root[data-nav-nom='Opera'] .selon-nav[data-nom='Opera'] {
+  display: inline;
+}
+
+:root[data-nav-nom] .adresse-autres,
+:root[data-nav='mobile'] .rdv-choix {
+  display: none;
+}
+
+.rdv-faits {
+  margin-top: var(--e-4);
+  color: var(--encre-douce);
+  font-size: var(--t-petit);
+  font-variant-numeric: tabular-nums;
+}
+
+.rdv-autres {
+  margin-top: var(--e-1);
+  font-size: var(--t-petit);
+}
+
+.rdv-mobile {
+  max-width: 36ch;
+  font-weight: 600;
+}
+
+.rdv-choix-titre {
+  margin-bottom: var(--e-4);
+  font-weight: 600;
+}
+
+/* Les deux choix l'un sous l'autre, à la même largeur. */
+.rdv-boutons {
+  display: grid;
+  justify-content: start;
+  gap: var(--e-3);
+}
+
+.rdv-boutons + .rdv-autres {
+  margin-top: var(--e-4);
+}
+
+/* ------------------------------------------------------------------ Sections */
+.section {
+  position: relative;
+  padding-top: var(--e-10);
+}
+
+.section h2 {
+  max-width: 16ch;
+  margin-bottom: var(--e-8);
+  font: 850 var(--t-h2) / 0.9 var(--f-affiche);
+  text-wrap: balance;
+}
+
+h3 {
+  font: 700 var(--t-h3) / 1.25 var(--f-texte);
+  text-wrap: balance;
+}
+
+/* ------------------------------------------------------------------ Une heure de live */
+.soiree {
+  margin-bottom: var(--e-7);
+}
+
+.soiree-pistes {
+  position: relative;
+  display: grid;
+  gap: var(--e-6);
+  container-type: inline-size;
+}
+
+.soiree-regle {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: var(--e-2);
+  border-bottom: var(--trait-fin) solid var(--encre);
+  font-size: var(--t-petit);
+  font-variant-numeric: tabular-nums;
+}
+
+.piste-nom {
+  margin-bottom: var(--e-3);
+  font-weight: 700;
+}
+
+/* Une colonne par tranche de la soirée, en secondes : les deux pistes restent alignées. */
+.piste-notes,
+.piste-bande {
+  display: grid;
+  grid-template-columns: minmax(3px, 30fr) 1050fr minmax(3px, 90fr) 1290fr minmax(3px, 180fr) 960fr;
+}
+
+.piste-notes {
+  height: 1.75rem;
+  font-size: var(--t-petit);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.note {
+  padding-left: var(--e-2);
+  border-left: var(--trait-fin) solid var(--encre);
+  white-space: nowrap;
+}
+
+.note-a { grid-column: 1; }
+.note-b { grid-column: 3; }
+.note-c { grid-column: 5; }
+
+.piste-bande {
+  align-items: center;
+  height: 3.5rem;
+}
+
+.seg {
+  height: 1.75rem;
+}
+
+.seg-live {
+  background: var(--encre);
+}
+
+.seg-pub {
+  height: 3.5rem;
+  background: var(--encre-rouge);
+}
+
+/* Trame de points : une autre diffusion du même live */
+.seg-secours {
+  background: radial-gradient(circle, var(--encre) 45%, transparent 48%) 0 0 / 5px 5px;
+}
+
+/* Hachures : image masquée, son coupé */
+.seg-masque {
+  background: repeating-linear-gradient(-45deg, var(--encre) 0 1.5px, transparent 1.5px 6px);
+}
+
+/* Tête de lecture commune aux deux pistes */
+.soiree-tete {
+  position: absolute;
+  top: 2.25rem;
+  bottom: 0;
+  left: 0;
+  width: 3px;
+  background: var(--papier);
+  outline: var(--trait-fin) solid var(--encre);
+  animation: lecture var(--duree-lecture) linear infinite;
+}
+
+.soiree:hover .soiree-tete {
+  animation-play-state: paused;
+}
+
+@keyframes lecture {
+  from {
+    translate: 0;
+  }
+  to {
+    translate: calc(100cqw - 3px);
+  }
+}
+
+.soiree figcaption {
+  max-width: 70ch;
+  margin-bottom: var(--e-6);
+  color: var(--encre-douce);
+  font-size: var(--t-petit);
+}
+
+.mecanisme {
+  display: grid;
+  row-gap: var(--e-6);
+}
+
+/* Légende : le motif de la piste dont parle chaque paragraphe. */
+.legende {
+  display: block;
+  width: 3rem;
+  height: 0.875rem;
+  margin-bottom: var(--e-4);
+}
+
+.mecanisme h3 {
+  margin-bottom: var(--e-3);
+}
+
+.mecanisme p {
+  max-width: 42ch;
+}
+
+/* Chaque explication commence sous sa coupure : mêmes proportions que les pistes
+   (pub et live qui suit), sans gouttière pour que les débuts tombent juste. */
+@media (min-width: 64rem) {
+  .mecanisme {
+    grid-template-columns: 1080fr 1380fr 1140fr;
+  }
+
+  .mecanisme-temps {
+    padding-right: var(--gouttiere);
+  }
+}
+
+/* ------------------------------------------------------------------ Installer */
+.rang {
+  row-gap: var(--e-4);
+  padding-block: var(--e-7);
+  border-top: var(--trait) solid var(--encre-rouge);
+}
+
+.rang-corps {
+  container: corps / inline-size;
+}
+
+.rang-corps > * + * {
+  margin-top: var(--e-4);
+}
+
+.rang-corps > .bouton {
+  margin-top: var(--e-5);
+}
+
+.rang-corps > p:not(.petit) {
+  max-width: 60ch;
+}
+
+.etapes {
+  display: grid;
+  gap: var(--e-6) var(--gouttiere);
+  margin-block: var(--e-7) var(--e-5);
+  padding: 0;
+  list-style: none;
+  counter-reset: etape;
+}
+
+@container corps (min-width: 46rem) {
+  .etapes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.etapes li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-content: start;
+  column-gap: var(--e-4);
+  counter-increment: etape;
+}
+
+.etapes li::before {
+  content: counter(etape);
+  grid-row: 1 / span 4;
+  min-width: 0.55em;
+  font: 900 var(--t-chiffre) / 0.8 var(--f-affiche);
+}
+
+.etapes li > * {
+  grid-column: 2;
+}
+
+.etapes h4 {
+  font: 700 var(--t-texte) / 1.3 var(--f-texte);
+}
+
+.etapes p {
+  margin-top: var(--e-2);
+}
+
+.adresse {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e-2);
+}
+
+.adresse-code {
+  padding: 0.3em 0.55em;
+  background: var(--encre-trame);
+  font-size: var(--t-texte);
+  font-weight: 600;
+}
+
+.rang-discret {
+  font-size: var(--t-petit);
+}
+
+/* ------------------------------------------------------------------ Questions */
+.question {
+  row-gap: var(--e-3);
+  padding-block: var(--e-6);
+  border-top: var(--trait-fin) solid var(--encre);
+}
+
+.question:last-child {
+  border-bottom: var(--trait-fin) solid var(--encre);
+}
+
+.question p {
+  max-width: 65ch;
+}
+
+/* ------------------------------------------------------------------ Pied */
+.pied {
+  position: relative;
+  padding-block: var(--e-10) var(--e-6);
+}
+
+.pied-marque {
+  margin-bottom: var(--e-6);
+  font: 900 var(--t-marque-pied) / 0.78 var(--f-affiche);
+  letter-spacing: -0.01em;
+}
+
+.pied-mentions {
+  row-gap: var(--e-2);
+  color: var(--encre-douce);
+  font-size: var(--t-petit);
+}
+
+/* ------------------------------------------------------------------ Mouvement réduit */
+@media (prefers-reduced-motion: reduce) {
+  .slogan-bande {
+    animation: none;
+  }
+
+  .soiree-tete {
+    display: none;
+  }
+
+  a,
+  .bouton,
+  .copier {
+    transition: none;
+  }
+}

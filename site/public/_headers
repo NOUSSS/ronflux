@@ -1,0 +1,26 @@
+/*
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), browsing-topics=()
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/telecharger/ronflux-firefox.xpi
+  Content-Type: application/x-xpinstall
+  Cache-Control: no-cache
+
+/telecharger/ronflux-chrome.zip
+  Content-Type: application/zip
+  Content-Disposition: attachment; filename="ronflux-chrome.zip"
+  Cache-Control: no-cache
+
+/telecharger/ronflux.user.js
+  Content-Type: text/javascript; charset=utf-8
+  Cache-Control: no-cache
+
+# Manifeste de mise à jour de Firefox (update_url), publié avec le .xpi.
+/updates.json
+  Content-Type: application/json
+  Cache-Control: no-cache
