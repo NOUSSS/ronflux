@@ -1,8 +1,8 @@
 # Ronflux
 
 Bloque les publicités vidéo (pre-roll et mid-roll) des lives Twitch. Disponible en trois formats
-qui partagent exactement le même code, téléchargeables sur le site (`https://ronflux.pages.dev`
-pour l'instant, adresse réglée dans `distribution.json`) :
+qui partagent exactement le même code, téléchargeables sur le site (`https://ronflux.feitanx.com`,
+adresse réglée dans `distribution.json`) :
 
 | Paquet | Pour | Mises à jour |
 |---|---|---|
@@ -46,18 +46,18 @@ bannières et de mesure publicitaire (`rules.json`).
 
 ## Installation
 
-Les liens ci-dessous partent du site, `https://ronflux.pages.dev` pour l'instant.
+Les liens ci-dessous partent du site, `https://ronflux.feitanx.com`.
 
 ### Firefox (et Zen, LibreWolf, Floorp…)
 
-1. Ouvrir `https://ronflux.pages.dev/telecharger/ronflux-firefox.xpi` (le lien Firefox du site).
+1. Ouvrir `https://ronflux.feitanx.com/telecharger/ronflux-firefox.xpi` (le lien Firefox du site).
 2. Firefox indique qu'il a bloqué l'installation depuis ce site : « Continuer vers
    l'installation », puis « Ajouter ».
 3. Recharger les onglets Twitch.
 
 Le paquet est signé par Mozilla sur le canal non répertorié d'addons.mozilla.org (signé, sans
 fiche publique) : il s'installe sur Firefox stable sans rien changer dans `about:config`. Firefox
-consulte chaque jour `https://ronflux.pages.dev/updates.json` et installe seul les nouvelles
+consulte chaque jour `https://ronflux.feitanx.com/updates.json` et installe seul les nouvelles
 versions (`about:addons` → roue dentée → « Rechercher des mises à jour » pour ne pas attendre).
 
 Firefox 140 ou plus récent (142 sur Android).
@@ -90,7 +90,7 @@ Chrome 111 ou plus récent (nécessaire pour `world: "MAIN"`).
 ### Userscript (Tampermonkey / Violentmonkey)
 
 1. Installer [Tampermonkey](https://www.tampermonkey.net/) ou [Violentmonkey](https://violentmonkey.github.io/).
-2. Ouvrir `https://ronflux.pages.dev/telecharger/ronflux.user.js` : l'extension propose
+2. Ouvrir `https://ronflux.feitanx.com/telecharger/ronflux.user.js` : l'extension propose
    l'installation.
 3. Recharger Twitch.
 
@@ -195,8 +195,7 @@ changer : elles ne recevraient plus les mises à jour.
 **Cloudflare Pages (site)**
 
 1. Créer le projet Pages qui sert le site. Son nom est celui de `cloudflarePagesProject` dans
-   `distribution.json` (`ronflux`) et donne l'adresse `ronflux.pages.dev`, déjà écrite dans les
-   paquets :
+   `distribution.json` (`ronflux`) :
 
    ```powershell
    cd tools\deploy
@@ -205,6 +204,11 @@ changer : elles ne recevraient plus les mises à jour.
    npx wrangler pages project create ronflux --production-branch main
    cd ..\..
    ```
+
+   Puis lui donner l'adresse écrite dans les paquets (`siteUrl`), `ronflux.feitanx.com` : dans le
+   tableau de bord, projet `ronflux` → Domaines personnalisés → ajouter `ronflux.feitanx.com`.
+   La zone `feitanx.com` étant sur le même compte, il suffit d'un CNAME `ronflux` vers
+   `ronflux.pages.dev`, en proxy.
 
    `wrangler login` ouvre le navigateur pour autoriser wrangler sur le compte Cloudflare.
    wrangler est installé à part, dans `tools/deploy`, pour que `npm ci` à la racine reste léger.
