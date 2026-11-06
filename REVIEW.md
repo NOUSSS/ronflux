@@ -48,7 +48,8 @@ Ce que le relecteur doit savoir sur ce projet en plus du code.
   node tests/ronflux.test.js
   ```
 
-  `VERBOSE=1` affiche les journaux de la page et du worker. `tests/harness.js` exécute
+  `tests/package.json` garde les essais en CommonJS, le `package.json` racine étant en
+  `"type": "module"`. `VERBOSE=1` affiche les journaux de la page et du worker. `tests/harness.js` exécute
   `src/ronflux.user.js` dans une page Twitch simulée (contexte vm) ; le worker du lecteur
   reçoit le script construit par l'enveloppe (`workerMain` sérialisé) et tourne dans un
   contexte séparé, avec un `self` simulé (`fetch`, `postMessage`, `addEventListener`) qui sert
