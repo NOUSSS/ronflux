@@ -1,7 +1,7 @@
 # Site de Ronflux
 
 Page d'accueil statique, construite avec [Vite](https://vite.dev/) sans framework : une page
-HTML, une feuille de style, deux petits scripts. Aucun script tiers, aucune mesure d'audience ;
+HTML, une feuille de style, trois petits scripts. Aucun script tiers, aucune mesure d'audience ;
 les polices sont servies par le site.
 
 ## Construire
@@ -76,13 +76,26 @@ la page propose le choix entre Firefox et Chromium.
 
 ## Logo et favicon
 
-Pas encore de logo : le nom s'affiche en texte. Le logo prendra la place de
-`.marque-signe` dans l'en-tête (masqué tant qu'il est vide) ; le favicon remplace la ligne
-`<link rel="icon" href="data:,">` de `index.html` (le commentaire juste au-dessus donne la
-ligne à mettre).
+Le logo n'existe qu'en un fichier, `extension/icon.svg`. Le build du site le sert tel quel en
+`/favicon.svg` et en tire le signe de l'en-tête et du pied de page (`signe()` dans
+`vite.config.js`) : la tuile en moins, le dessin à l'encre du texte. Le SVG doit donc garder
+cette forme :
+
+- la tuile est son premier élément, un `<rect …/>` ;
+- les couleurs du dessin sont en hexadécimal, dans des attributs `fill` ou `stroke` ; elles
+  passent en `currentColor`.
+
+Sinon le build du site échoue. Le cadrage du signe (`CADRAGE_SIGNE`, `18 8 80 80` dans un
+dessin de 96 × 96) est fait pour le R actuel : avec un autre dessin, il faut le revoir, faute
+de quoi le signe est rogné sans erreur. `release.ps1` ne construit le site qu'après la
+signature AMO : après un changement de logo, lancer `npm run build` ici et regarder l'en-tête
+avant de publier.
 
 ## Direction artistique
 
-Une affiche militante tirée en sérigraphie : papier rose, encres bleu nuit et rouge en
-surimpression, jaune fluo réservé au bouton d'installation. Les jetons sont en tête de
-`src/style.css` ; le détail est dans `DESIGN.md`.
+Le compte rendu d'une nuit d'enregistreur : papier vert pâle réglé en carreaux, encres
+vert-noir, ocre réservé aux pubs. En haut de page, une bande défile comme le papier d'un
+enregistreur, sur trois pistes : ce que Twitch diffuse, ce que vous voyez, ce que fait Ronflux.
+Les jetons sont en tête de `src/style.css` ; les tracés sont calculés par
+`src/enregistrement.js`, au build pour l'image fixe et dans la page pour le défilement. Le
+détail est dans `DESIGN.md`.

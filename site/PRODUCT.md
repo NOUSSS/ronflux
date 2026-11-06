@@ -48,16 +48,18 @@ change de flux. Tout se passe dans le navigateur : aucune donnée collectée, au
   rechargement du lecteur à la fin de la pub.
 - Ronflux n'est pas affilié à Twitch. Le site parle de Twitch sans imiter sa marque, son logo
   ni son violet.
-- Ouvert : adresse du site, logo, lien Chrome Web Store.
+- Ouvert : adresse du site, lien Chrome Web Store.
 
 ## Brand Commitments
 
 - Nom : Ronflux (clin d'œil à un Pokémon, dans la lignée d'autres projets nommés ainsi). Le
-  site ne joue pas sur le sens de « ronfler » et ne reprend aucun élément de Pokémon.
-- Pas de logo pour l'instant : le nom en texte.
+  logo assume l'allusion au sommeil et au ronflement ; ni le logo ni le site ne reprennent quoi
+  que ce soit du Pokémon (personnage, silhouette, couleurs).
+- Logo à créer avec l'identité. Il sert aussi d'icône à l'extension : lisible de 16 à 128 px.
 - Ton : militant assumé contre l'excès de pubs (« on se croirait à la télévision »), sans
   attaquer les streamers. Vouvoiement, pas de ton marketing.
-- À éviter : l'air d'un logiciel louche, le jargon technique, une page sage sans identité.
+- À éviter : l'air d'un logiciel louche, le jargon technique, une page criarde (couleurs
+  saturées, effets qui fatiguent), l'air d'un site généré.
 
 ## Evidence on Hand
 

@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { defineConfig } from 'vite';
 import reglages from './ronflux.config.js';
+import { POINT_FIXE, heure, svgBande, svgPlumes, svgReleve } from './src/enregistrement.js';
 
 const racine = (chemin) => new URL(`../${chemin}`, import.meta.url);
 const lireJson = (chemin) => JSON.parse(readFileSync(racine(chemin), 'utf8').replace(/^﻿/, ''));
@@ -41,11 +42,11 @@ function lireChromeWebStore() {
   return url;
 }
 
-// Polices du premier écran, préchargées pour que le slogan ne change pas de forme
+// Polices du premier écran, préchargées pour que le titre ne change pas de forme
 // à leur arrivée.
 const POLICES_PRECHARGEES = [
-  /big-shoulders-stencil-latin-opsz-normal-[\w-]+\.woff2$/,
-  /archivo-latin-wght-normal-[\w-]+\.woff2$/,
+  /sofia-sans-condensed-latin-wght-normal-[\w-]+\.woff2$/,
+  /sofia-sans-latin-wght-normal-[\w-]+\.woff2$/,
 ];
 
 function ronflux() {
@@ -55,7 +56,45 @@ function ronflux() {
   // <!-- sinon:nom -->…<!-- /sinon:nom -->.
   const conditions = { cws: Boolean(chromeWebStore), 'maj-firefox': majFirefox };
 
+  // Le logo de l'extension sert aussi de favicon et de signe dans la page : un seul fichier.
+  const logo = () => readFileSync(racine('extension/icon.svg'));
+
+  // Partie du dessin de l'icône (96 × 96) que montre le signe : le R, sans la marge de la
+  // tuile. Faite pour le dessin actuel ; un nouveau dessin demande un nouveau cadrage.
+  const CADRAGE_SIGNE = '18 8 80 80';
+
+  // Dans la page, le signe est le dessin de l'icône sans sa tuile, à l'encre du texte.
+  // Forme exigée de icon.svg : la tuile en premier élément, un <rect …/>, et les couleurs du
+  // dessin en hexadécimal (fill ou stroke). Voir site/README.md, « Logo et favicon ».
+  function signe() {
+    const source = logo().toString('utf8').replace(/<!--[\s\S]*?-->\s*/g, '');
+    if (!/<svg\b[^>]*>\s*<rect\b[^>]*\/>/.test(source)) {
+      throw new Error("extension/icon.svg : la tuile doit être le premier élément, un <rect …/> (voir signe() dans vite.config.js)");
+    }
+    const svg = source
+      .replace(/<rect\b[^>]*\/>\s*/, '')
+      .replace(/\b(fill|stroke)="#[0-9a-f]{3,8}"/gi, '$1="currentColor"')
+      .replace(/<svg\b[^>]*>/, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${CADRAGE_SIGNE}" width="32" height="32" class="marque-signe" aria-hidden="true" focusable="false">`)
+      .replace(/\s*\n\s*/g, '');
+    if (/#[0-9a-f]{3,8}\b/i.test(svg)) {
+      throw new Error("extension/icon.svg : une couleur du dessin n'est pas dans un attribut fill ou stroke (voir signe() dans vite.config.js)");
+    }
+    return svg;
+  }
+
   return [
+    {
+      name: 'ronflux:favicon',
+      configureServer(server) {
+        server.middlewares.use('/favicon.svg', (_req, res) => {
+          res.setHeader('Content-Type', 'image/svg+xml');
+          res.end(logo());
+        });
+      },
+      generateBundle() {
+        this.emitFile({ type: 'asset', fileName: 'favicon.svg', source: logo() });
+      },
+    },
     {
       name: 'ronflux:contenu',
       transformIndexHtml: {
@@ -69,7 +108,13 @@ function ronflux() {
             .replaceAll('{{chromeWebStore}}', chromeWebStore)
             .replaceAll('{{version}}', version)
             .replaceAll('{{firefoxMin}}', firefoxMin)
-            // Les commentaires du gabarit (logo et favicon à venir) ne partent pas en ligne.
+            // Tracés de démonstration, calculés une fois pour être là sans JavaScript.
+            .replace('{{bande}}', svgBande())
+            .replace('{{plumes}}', svgPlumes())
+            .replace('{{heure}}', heure(POINT_FIXE))
+            .replace('{{releve}}', svgReleve('large') + svgReleve('etroit'))
+            .replaceAll('{{signe}}', signe())
+            // Les commentaires du gabarit ne partent pas en ligne.
             .replace(/\s*<!--[\s\S]*?-->/g, '');
         },
       },

@@ -1,5 +1,6 @@
 // Tire du logo SVG les icônes PNG de l'extension Chrome (Chrome refuse le SVG dans un manifeste).
-// Le logo n'existe qu'en un seul fichier source, extension/icon.svg : le remplacer suffit.
+// Le logo n'existe qu'en un seul fichier source, extension/icon.svg, dont le site tire aussi
+// son favicon et le signe de la page (forme exigée : site/README.md, « Logo et favicon »).
 //
 //   node tools/icons.mjs <icon.svg> <dossier de sortie> <taille>…   → <dossier>/icon-<taille>.png
 //

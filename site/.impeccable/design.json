@@ -1,341 +1,141 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-06T00:31:21+00:00",
+  "generatedAt": "2026-11-06T12:00:00+00:00",
   "title": "Design System: Ronflux",
   "extensions": {
     "colorMeta": {
-      "papier": {
-        "role": "neutral",
-        "displayName": "Papier rose",
-        "canonical": "#ff8fb8",
-        "tonalRamp": [
-          "oklch(15% 0.047 357)",
-          "oklch(26% 0.072 357)",
-          "oklch(37% 0.098 357)",
-          "oklch(48% 0.124 357)",
-          "oklch(59% 0.131 357)",
-          "oklch(70% 0.105 357)",
-          "oklch(82% 0.077 357)",
-          "oklch(93% 0.051 357)"
-        ]
-      },
-      "encre": {
-        "role": "primary",
-        "displayName": "Bleu nuit d’encre",
-        "canonical": "#13286b",
-        "tonalRamp": [
-          "oklch(15% 0.043 266)",
-          "oklch(26% 0.067 266)",
-          "oklch(37% 0.091 266)",
-          "oklch(48% 0.115 266)",
-          "oklch(59% 0.121 266)",
-          "oklch(70% 0.098 266)",
-          "oklch(82% 0.072 266)",
-          "oklch(93% 0.048 266)"
-        ]
-      },
-      "encre-douce": {
-        "role": "neutral",
-        "displayName": "Encre douce",
-        "canonical": "color-mix(in oklab, var(--encre) 86%, var(--papier))"
-      },
-      "encre-trame": {
-        "role": "neutral",
-        "displayName": "Trame",
-        "canonical": "color-mix(in oklab, var(--encre) 12%, var(--papier))"
-      },
-      "encre-rouge": {
-        "role": "secondary",
-        "displayName": "Rouge de sérigraphie",
-        "canonical": "#e3201b",
-        "tonalRamp": [
-          "oklch(15% 0.073 28)",
-          "oklch(26% 0.114 28)",
-          "oklch(37% 0.154 28)",
-          "oklch(48% 0.194 28)",
-          "oklch(59% 0.205 28)",
-          "oklch(70% 0.165 28)",
-          "oklch(82% 0.121 28)",
-          "oklch(93% 0.081 28)"
-        ]
-      },
-      "encre-jaune": {
-        "role": "tertiary",
-        "displayName": "Jaune fluo",
-        "canonical": "#f2ff3d",
-        "tonalRamp": [
-          "oklch(15% 0.067 113)",
-          "oklch(26% 0.103 113)",
-          "oklch(37% 0.140 113)",
-          "oklch(48% 0.177 113)",
-          "oklch(59% 0.187 113)",
-          "oklch(70% 0.150 113)",
-          "oklch(82% 0.110 113)",
-          "oklch(93% 0.073 113)"
-        ]
-      },
-      "encre-surimpression": {
-        "role": "neutral",
-        "displayName": "Surimpression bleu sous rouge",
-        "canonical": "#11050b"
-      }
+      "ocre": { "role": "primary", "displayName": "Ocre de pub", "canonical": "#d9a441", "tonalRamp": ["#3a2a0c", "#5e4415", "#83601f", "#ab7e2a", "#d9a441", "#e5bd73", "#efd6a6", "#f8eed9"] },
+      "ocre-voile": { "role": "primary", "displayName": "Voile d'ocre", "canonical": "rgb(217 164 65 / 0.3)", "tonalRamp": ["#3a2a0c", "#5e4415", "#83601f", "#ab7e2a", "#d9a441", "#e5bd73", "#efd6a6", "#f8eed9"] },
+      "encre": { "role": "neutral", "displayName": "Encre", "canonical": "#1d2a2f", "tonalRamp": ["#0b1214", "#1d2a2f", "#34474e", "#4a5c60", "#6b7d80", "#93a3a4", "#bfcac9", "#e6ecea"] },
+      "encre-2": { "role": "neutral", "displayName": "Encre seconde", "canonical": "#4a5c60", "tonalRamp": ["#0b1214", "#1d2a2f", "#34474e", "#4a5c60", "#6b7d80", "#93a3a4", "#bfcac9", "#e6ecea"] },
+      "encre-survol": { "role": "neutral", "displayName": "Encre de survol", "canonical": "#34474e", "tonalRamp": ["#0b1214", "#1d2a2f", "#34474e", "#4a5c60", "#6b7d80", "#93a3a4", "#bfcac9", "#e6ecea"] },
+      "papier": { "role": "neutral", "displayName": "Papier", "canonical": "#eef2ec", "tonalRamp": ["#2c3a31", "#4a5c50", "#6f8475", "#98ac9e", "#c6d6ca", "#dfe8e1", "#eef2ec", "#f6f8f4"] },
+      "papier-clair": { "role": "neutral", "displayName": "Papier clair", "canonical": "#f6f8f4", "tonalRamp": ["#2c3a31", "#4a5c50", "#6f8475", "#98ac9e", "#c6d6ca", "#dfe8e1", "#eef2ec", "#f6f8f4"] },
+      "reglure-forte": { "role": "neutral", "displayName": "Réglure forte", "canonical": "#c6d6ca", "tonalRamp": ["#2c3a31", "#4a5c50", "#6f8475", "#98ac9e", "#c6d6ca", "#dfe8e1", "#eef2ec", "#f6f8f4"] },
+      "reglure": { "role": "neutral", "displayName": "Réglure", "canonical": "#dfe8e1", "tonalRamp": ["#2c3a31", "#4a5c50", "#6f8475", "#98ac9e", "#c6d6ca", "#dfe8e1", "#eef2ec", "#f6f8f4"] }
     },
     "typographyMeta": {
-      "display": {
-        "displayName": "Slogan",
-        "purpose": "Le slogan seul, en capitales, trois lignes en escalier."
-      },
-      "marque-pied": {
-        "displayName": "Marque du pied",
-        "purpose": "Le nom en très grand dans le pied."
-      },
-      "headline": {
-        "displayName": "Titre de partie",
-        "purpose": "h2 de chaque partie, 16 ch au plus."
-      },
-      "chiffre": {
-        "displayName": "Chiffre d’étape",
-        "purpose": "Numéros des étapes d’installation."
-      },
-      "bouton": {
-        "displayName": "Bouton",
-        "purpose": "Libellé du bouton jaune."
-      },
-      "marque": {
-        "displayName": "Marque",
-        "purpose": "Nom dans l’en-tête."
-      },
-      "title": {
-        "displayName": "Titre",
-        "purpose": "h3 des rangs, explications et questions."
-      },
-      "tract": {
-        "displayName": "Tract",
-        "purpose": "Les trois phrases du premier écran."
-      },
-      "body": {
-        "displayName": "Texte",
-        "purpose": "Texte courant."
-      },
-      "label": {
-        "displayName": "Petit texte",
-        "purpose": "Faits, légendes, mentions, en encre douce."
-      },
-      "code": {
-        "displayName": "Code",
-        "purpose": "Adresse à copier."
-      }
+      "display": { "displayName": "Titre d'ouverture, ligne forte", "purpose": "Première ligne du titre d'ouverture, condensée 700." },
+      "display-second": { "displayName": "Titre d'ouverture, ligne maigre", "purpose": "Seconde ligne du titre d'ouverture, condensée 380." },
+      "headline": { "displayName": "Titre de section", "purpose": "Titres de section, suivis de 40 px." },
+      "title-poste": { "displayName": "Titre de poste", "purpose": "Titre d'un poste d'installation, colonne de gauche." },
+      "title": { "displayName": "Titre de note", "purpose": "Titres des notes épinglées au relevé." },
+      "question": { "displayName": "Question", "purpose": "Intitulé d'une question, colonne de gauche." },
+      "bouton": { "displayName": "Bouton", "purpose": "Libellé du bouton d'encre, 20 px sur téléphone." },
+      "marque": { "displayName": "Nom", "purpose": "Nom Ronflux à côté du signe, 24 px sur téléphone." },
+      "navigation": { "displayName": "Navigation", "purpose": "Liens de l'en-tête, 17 px sur téléphone." },
+      "piste": { "displayName": "Piste", "purpose": "Noms des pistes et lectures sous les plumes, chiffres tabulaires." },
+      "graduation": { "displayName": "Graduation", "purpose": "Heures des notes, étiquettes de pubs, graduations du relevé." },
+      "body": { "displayName": "Texte", "purpose": "Texte courant, 17 px sur 24 px." },
+      "label": { "displayName": "Annotation", "purpose": "Faits, légendes, mentions, en encre seconde." },
+      "code": { "displayName": "Adresse", "purpose": "Adresses à copier (chrome://extensions)." }
     },
     "shadows": [],
-    "borders": [
-      {
-        "name": "trait",
-        "value": "3px",
-        "purpose": "Focus, survol des liens, filet rouge des rangs d’installation."
-      },
-      {
-        "name": "trait-fin",
-        "value": "1.5px",
-        "purpose": "Soulignement des liens, règle de temps, filets des questions, contour de la tête de lecture."
-      }
-    ],
-    "textures": [
-      {
-        "name": "grain",
-        "value": "url('./textures/grain.svg') 0 0 / 240px 240px",
-        "purpose": "Grain du papier, repris sous la bande rouge."
-      },
-      {
-        "name": "repere",
-        "value": "url('./textures/repere.svg')",
-        "purpose": "Masque de la croix de repérage : 14px sur téléphone, 28px à partir de 48rem."
-      }
-    ],
     "motion": [
-      {
-        "name": "sortie",
-        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
-        "purpose": "Courbe unique de la page."
-      },
-      {
-        "name": "duree-courte",
-        "value": "160ms",
-        "purpose": "Changements d’état des liens et boutons (couleur, épaisseur de trait)."
-      },
-      {
-        "name": "duree-longue",
-        "value": "900ms",
-        "purpose": "Calage de la bande rouge au chargement, après 0.15s."
-      },
-      {
-        "name": "duree-lecture",
-        "value": "24s",
-        "purpose": "Traversée linéaire et en boucle de la tête de lecture, en pause au survol de la figure."
-      },
-      {
-        "name": "calage",
-        "value": "@keyframes calage { from { --calage-x: 0.3em; --calage-y: 0.05em; } }",
-        "purpose": "L’évidement glisse jusqu’à son défaut : 1.5 à 3px en x, 0.75 à 1.25px en y."
-      },
-      {
-        "name": "reduced-motion",
-        "value": "prefers-reduced-motion: reduce",
-        "purpose": "Pas de calage, pas de tête de lecture, aucune transition."
-      }
+      { "name": "survol", "value": "160ms cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Changement de fond des boutons au survol, seule transition d'état." },
+      { "name": "defilement-bande", "value": "40px/s, requestAnimationFrame", "purpose": "Défilement du papier de la bande sous les plumes ; arrêté hors écran, par le bouton Pause, et absent avec prefers-reduced-motion." }
     ],
     "breakpoints": [
-      {
-        "name": "tablette",
-        "value": "48rem",
-        "purpose": "Grille de 12 colonnes, ligne de repérage en colonne 7, croix de 28px."
-      },
-      {
-        "name": "ordinateur",
-        "value": "64rem",
-        "purpose": "Ligne de repérage en colonne 6, mécanisme sur trois colonnes."
-      },
-      {
-        "name": "affiche-plein-ecran",
-        "value": "(min-width: 64rem) and (min-height: 40rem)",
-        "purpose": "Le premier écran occupe la hauteur sous l’en-tête."
-      },
-      {
-        "name": "etapes-deux-colonnes",
-        "value": "@container corps (min-width: 46rem)",
-        "purpose": "Étapes d’installation sur deux colonnes."
-      }
-    ],
-    "grid": {
-      "columns": 12,
-      "ligne": "--ligne : 6 à partir de 64rem, 7 de 48 à 64rem",
-      "cadre": "112rem",
-      "marge": "clamp(1rem, 4vw, 4rem)",
-      "gouttiere": "clamp(1rem, 2vw, 2rem)"
-    }
+      { "name": "telephone", "value": "max-width: 639px" },
+      { "name": "tablette", "value": "max-width: 1023px" }
+    ]
   },
   "components": [
     {
-      "name": "Bouton d’installation",
+      "name": "Bouton d'encre",
       "kind": "button",
-      "refersTo": "bouton-installer",
-      "description": "Seul élément jaune : installer la version du navigateur reconnu.",
-      "html": "<a class=\"ds-bouton\" href=\"#\"><svg class=\"ds-icone\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 3v12m0 0-5.5-5.5M12 15l5.5-5.5M4 20.5h16\"/></svg> Installer pour Firefox</a>",
-      "css": ".ds-bouton { display: inline-flex; align-items: center; gap: 0.45em; padding: 0.5em 0.85em 0.45em; border-radius: 0; background: var(--encre-jaune, #f2ff3d); color: var(--encre, #13286b); font: 800 clamp(1.5rem, 1.2rem + 0.8vw, 2rem) / 1 'Affiche', 'Arial Narrow', sans-serif; letter-spacing: 0.01em; text-decoration: none; transition: background-color 160ms cubic-bezier(0.16, 1, 0.3, 1), color 160ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-bouton:hover { background: var(--encre, #13286b); color: var(--encre-jaune, #f2ff3d); } .ds-bouton:focus-visible { outline: 3px solid var(--encre, #13286b); outline-offset: 3px; } .ds-icone { flex: none; width: 0.9em; height: 0.9em; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: square; }"
+      "refersTo": "bouton-encre",
+      "description": "Action d'installer ou de télécharger : plein d'encre, angles droits, icône de trait quand il télécharge.",
+      "html": "<a class=\"ds-bouton\" href=\"#\"><svg class=\"ds-icone\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 3v12m0 0-5.5-5.5M12 15l5.5-5.5M4 20.5h16\"/></svg>Télécharger pour Chrome</a>",
+      "css": ".ds-bouton { display: inline-flex; align-items: center; gap: 12px; min-height: 56px; padding: 0 28px; border: 0; border-radius: 0; background: var(--encre, #1d2a2f); color: var(--papier, #eef2ec); font-family: 'Sofia Sans Condensed', 'Arial Narrow', sans-serif; font-size: 1.375rem; font-weight: 600; line-height: 24px; text-decoration: none; transition: background-color 160ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-bouton:hover { background: var(--encre-survol, #34474e); } .ds-bouton:focus-visible { outline: 2px solid var(--encre, #1d2a2f); outline-offset: 3px; } .ds-icone { flex: none; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; }"
     },
     {
-      "name": "Bouton de copie",
+      "name": "Bouton de texte",
       "kind": "button",
-      "refersTo": "bouton-copier",
-      "description": "Secondaire : copie l’adresse de la page des extensions.",
-      "html": "<p class=\"ds-adresse\"><code class=\"ds-adresse-code\">chrome://extensions</code><button class=\"ds-copier\" type=\"button\">Copier</button></p>",
-      "css": ".ds-adresse { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin: 0; } .ds-adresse-code { padding: 0.3em 0.55em; background: var(--encre-trame, color-mix(in oklab, #13286b 12%, #ff8fb8)); color: var(--encre, #13286b); font: 600 1.0625rem ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace; } .ds-copier { padding: 0.45em 0.8em; border: 1.5px solid var(--encre, #13286b); border-radius: 0; background: transparent; color: var(--encre, #13286b); font: 600 0.9375rem / 1 'Texte', system-ui, sans-serif; cursor: pointer; transition: background-color 160ms cubic-bezier(0.16, 1, 0.3, 1), color 160ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-copier:hover { background: var(--encre, #13286b); color: var(--papier, #ff8fb8); } .ds-copier:focus-visible { outline: 3px solid var(--encre, #13286b); outline-offset: 3px; }"
+      "refersTo": "bouton-texte",
+      "description": "Petite action secondaire (Copier, Pause) : contour d'encre d'un pixel, fond transparent.",
+      "html": "<button class=\"ds-bouton-texte\" type=\"button\">Pause</button>",
+      "css": ".ds-bouton-texte { height: 32px; padding: 0 12px; border: 1px solid var(--encre, #1d2a2f); border-radius: 0; background: transparent; color: var(--encre, #1d2a2f); font-family: 'Sofia Sans Condensed', 'Arial Narrow', sans-serif; font-size: 1rem; font-weight: 600; line-height: 1; cursor: pointer; transition: background-color 160ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-bouton-texte:hover { background: var(--papier-clair, #f6f8f4); } .ds-bouton-texte:focus-visible { outline: 2px solid var(--encre, #1d2a2f); outline-offset: 2px; }"
     },
     {
-      "name": "Navigation d’en-tête",
+      "name": "Adresse à copier",
+      "kind": "input",
+      "refersTo": "adresse-code",
+      "description": "Adresse à recopier dans la barre du navigateur, sur un petit insert de papier clair, suivie de son bouton Copier.",
+      "html": "<p class=\"ds-adresse\"><code class=\"ds-adresse-code\">chrome://extensions</code><button class=\"ds-adresse-copier\" type=\"button\">Copier</button></p>",
+      "css": ".ds-adresse { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0; } .ds-adresse-code { padding: 4px 10px; border: 1px solid var(--reglure-forte, #c6d6ca); background: var(--papier-clair, #f6f8f4); color: var(--encre, #1d2a2f); font-family: ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace; font-size: 0.875em; line-height: 22px; } .ds-adresse-copier { height: 32px; padding: 0 12px; border: 1px solid var(--encre, #1d2a2f); background: transparent; color: var(--encre, #1d2a2f); font-family: 'Sofia Sans Condensed', 'Arial Narrow', sans-serif; font-size: 1rem; font-weight: 600; cursor: pointer; } .ds-adresse-copier:hover { background: var(--papier-clair, #f6f8f4); } .ds-adresse-copier:focus-visible { outline: 2px solid var(--encre, #1d2a2f); outline-offset: 2px; }"
+    },
+    {
+      "name": "En-tête et navigation",
       "kind": "nav",
-      "refersTo": "marque",
-      "description": "Marque en Affiche à gauche, deux ancres soulignées à droite.",
-      "html": "<header class=\"ds-entete\"><a class=\"ds-marque\" href=\"#\">Ronflux</a><nav class=\"ds-nav\"><a href=\"#\">Fonctionnement</a><a href=\"#\">Questions</a></nav></header>",
-      "css": ".ds-entete { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; min-height: 4.5rem; color: var(--encre, #13286b); font: 400 1.0625rem / 1.55 'Texte', system-ui, sans-serif; } .ds-marque { font: 900 2rem / 1 'Affiche', 'Arial Narrow', sans-serif; letter-spacing: 0.01em; color: inherit; text-decoration: none; } .ds-nav { display: flex; gap: 1.5rem; font-weight: 600; } .ds-nav a { padding-block: 0.5rem; color: inherit; text-decoration-thickness: 1.5px; text-underline-offset: 0.2em; transition: text-decoration-thickness 160ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-nav a:hover { text-decoration-thickness: 3px; } .ds-nav a:focus-visible, .ds-marque:focus-visible { outline: 3px solid var(--encre, #13286b); outline-offset: 3px; }"
+      "refersTo": "navigation",
+      "description": "Signe (R nu à l'encre) et nom à gauche, trois liens condensés à droite, soulignés au survol.",
+      "html": "<header class=\"ds-entete\"><a class=\"ds-marque\" href=\"#\"><svg viewBox=\"18 8 80 80\" width=\"32\" height=\"32\" aria-hidden=\"true\"><path d=\"M28 84 V18 H50 A15 15 0 0 1 50 48 H28\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"12\"/><path d=\"M42 48 L52 66 C56 75 61 76 65 67 C69 57 74 57 78 66 C81 73 85 74 88 70 L96 70\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"10\" stroke-linejoin=\"round\"/></svg><span class=\"ds-marque-nom\">Ronflux</span></a><nav class=\"ds-nav\"><a href=\"#\">Fonctionnement</a><a href=\"#\">Installer</a><a href=\"#\">Questions</a></nav></header>",
+      "css": ".ds-entete { display: flex; align-items: center; justify-content: space-between; gap: 24px; height: 80px; color: var(--encre, #1d2a2f); } .ds-marque { display: inline-flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; } .ds-marque-nom { font-family: 'Sofia Sans Condensed', 'Arial Narrow', sans-serif; font-size: 1.75rem; font-weight: 700; line-height: 32px; } .ds-nav { display: flex; gap: 32px; font-family: 'Sofia Sans Condensed', 'Arial Narrow', sans-serif; font-size: 1.1875rem; font-weight: 500; } .ds-nav a { color: inherit; text-decoration: none; text-underline-offset: 0.2em; } .ds-nav a:hover { text-decoration: underline; } .ds-nav a:focus-visible, .ds-marque:focus-visible { outline: 2px solid var(--encre, #1d2a2f); outline-offset: 2px; }"
     },
     {
-      "name": "Pistes de la soirée",
+      "name": "Icône du logo",
       "kind": "custom",
-      "refersTo": "piste-live",
-      "description": "Même live en deux bandes : aplat live, aplat pub rouge, trame de points (secours), hachures (masquée).",
-      "html": "<div class=\"ds-pistes\"><div class=\"ds-bande\"><span class=\"ds-seg ds-pub\"></span><span class=\"ds-seg ds-live\"></span><span class=\"ds-seg ds-pub\"></span><span class=\"ds-seg ds-live\"></span></div><div class=\"ds-bande\"><span class=\"ds-seg ds-secours\"></span><span class=\"ds-seg ds-live\"></span><span class=\"ds-seg ds-masque\"></span><span class=\"ds-seg ds-live\"></span></div></div>",
-      "css": ".ds-pistes { display: grid; gap: 2rem; } .ds-bande { display: grid; grid-template-columns: 90fr 1050fr 180fr 960fr; align-items: center; height: 3.5rem; } .ds-seg { height: 1.75rem; } .ds-live { background: var(--encre, #13286b); } .ds-pub { height: 3.5rem; background: var(--encre-rouge, #e3201b); } .ds-secours { background: radial-gradient(circle, var(--encre, #13286b) 45%, transparent 48%) 0 0 / 5px 5px; } .ds-masque { background: repeating-linear-gradient(-45deg, var(--encre, #13286b) 0 1.5px, transparent 1.5px 6px); }"
+      "refersTo": "logo",
+      "description": "Forme d'icône (extension, favicon) : le R d'encre sur une tuile carrée d'ocre à angles droits. Jamais dans la page.",
+      "html": "<svg class=\"ds-icone-logo\" viewBox=\"0 0 96 96\" width=\"64\" height=\"64\" aria-label=\"Ronflux\"><rect width=\"96\" height=\"96\" fill=\"#d9a441\"/><path d=\"M28 84 V18 H50 A15 15 0 0 1 50 48 H28\" fill=\"none\" stroke=\"#1d2a2f\" stroke-width=\"12\"/><path d=\"M42 48 L52 66 C56 75 61 76 65 67 C69 57 74 57 78 66 C81 73 85 74 88 70 L96 70\" fill=\"none\" stroke=\"#1d2a2f\" stroke-width=\"10\" stroke-linejoin=\"round\"/></svg>",
+      "css": ".ds-icone-logo { display: block; }"
     },
     {
-      "name": "Rang d’installation",
+      "name": "Poste d'installation",
+      "kind": "custom",
+      "refersTo": "poste",
+      "description": "Rangée ouverte par un filet d'encre peint en fond : titre à gauche, corps à droite, finit par « Une fois fait : ».",
+      "html": "<div class=\"ds-poste\"><h3 class=\"ds-poste-titre\">Firefox, Zen et dérivés</h3><div><p>Firefox vous demande d’abord d’autoriser ce site, puis de confirmer l’ajout de Ronflux.</p><p class=\"ds-fini\"><span class=\"ds-fini-titre\">Une fois fait :</span> rechargez vos onglets Twitch.</p></div></div>",
+      "css": ".ds-poste { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 24px 40px; padding: 40px 0; background: linear-gradient(var(--encre, #1d2a2f), var(--encre, #1d2a2f)) top / 100% 1px no-repeat; color: var(--encre, #1d2a2f); font-family: 'Sofia Sans', system-ui, sans-serif; font-size: 1.0625rem; line-height: 24px; } .ds-poste p { margin: 0; } .ds-poste-titre { margin: 0; font-family: 'Sofia Sans Condensed', 'Arial Narrow', sans-serif; font-size: 1.625rem; font-weight: 700; line-height: 32px; } .ds-fini { margin-top: 16px !important; } .ds-fini-titre { font-family: 'Sofia Sans Condensed', 'Arial Narrow', sans-serif; font-weight: 700; }"
+    },
+    {
+      "name": "Insert de tracé",
       "kind": "card",
-      "refersTo": "bouton-installer",
-      "description": "Une famille de navigateurs : filet rouge de 3 px, titre à gauche de la ligne, corps à droite.",
-      "html": "<div class=\"ds-rang\"><h3>Firefox, Zen et dérivés</h3><div><p>Firefox vous demande d’abord d’autoriser ce site, puis de confirmer l’ajout de Ronflux.</p></div></div>",
-      "css": ".ds-rang { display: grid; grid-template-columns: 5fr 7fr; column-gap: 2rem; row-gap: 1rem; padding-block: 3rem; border-top: 3px solid var(--encre-rouge, #e3201b); color: var(--encre, #13286b); font: 400 1.0625rem / 1.55 'Texte', system-ui, sans-serif; } .ds-rang h3 { margin: 0; font: 700 1.25rem / 1.25 'Texte', system-ui, sans-serif; } .ds-rang p { margin: 0; max-width: 60ch; }"
-    },
-    {
-      "name": "Question",
-      "kind": "custom",
-      "refersTo": "title",
-      "description": "Question à gauche de la ligne, réponse à droite, entre filets fins bleus.",
-      "html": "<div class=\"ds-question\"><h3>Ça marche sur les rediffusions et les clips ?</h3><p>Non, seulement sur les lives.</p></div>",
-      "css": ".ds-question { display: grid; grid-template-columns: 5fr 7fr; column-gap: 2rem; row-gap: 0.75rem; padding-block: 2rem; border-block: 1.5px solid var(--encre, #13286b); color: var(--encre, #13286b); font: 400 1.0625rem / 1.55 'Texte', system-ui, sans-serif; } .ds-question h3 { margin: 0; font: 700 1.25rem / 1.25 'Texte', system-ui, sans-serif; } .ds-question p { margin: 0; max-width: 65ch; }"
-    },
-    {
-      "name": "Croix de repérage",
-      "kind": "custom",
-      "refersTo": "encre",
-      "description": "Repère en encre bleue, centré sur la ligne de repérage en tête de chaque partie.",
-      "html": "<svg class=\"ds-repere\" viewBox=\"0 0 28 28\" aria-hidden=\"true\"><circle cx=\"14\" cy=\"14\" r=\"7\"/><path d=\"M14 0v28M0 14h28\"/></svg>",
-      "css": ".ds-repere { width: 28px; height: 28px; fill: none; stroke: var(--encre, #13286b); stroke-width: 1.5px; }"
+      "refersTo": "insert",
+      "description": "Papier clair des tracés, bordé de deux filets d'encre peints, réglé depuis son bord haut ; l'ocre y marque les pubs.",
+      "html": "<div class=\"ds-insert\"><span class=\"ds-insert-voile\"></span><span class=\"ds-insert-pub\"></span><span class=\"ds-insert-lecture\">Une pub</span></div>",
+      "css": ".ds-insert { position: relative; height: 160px; background-color: var(--papier-clair, #f6f8f4); background-image: linear-gradient(#1d2a2f, #1d2a2f), linear-gradient(#1d2a2f, #1d2a2f), linear-gradient(#c6d6ca 1px, transparent 1px), linear-gradient(90deg, #c6d6ca 1px, transparent 1px), linear-gradient(#dfe8e1 1px, transparent 1px), linear-gradient(90deg, #dfe8e1 1px, transparent 1px); background-size: 100% 1px, 100% 1px, 40px 40px, 40px 40px, 8px 8px, 8px 8px; background-position: top, bottom, 0 0, 0 0, 0 0, 0 0; background-repeat: no-repeat, no-repeat, repeat, repeat, repeat, repeat; } .ds-insert-voile { position: absolute; top: 0; bottom: 0; left: 80px; width: 160px; background: rgb(217 164 65 / 0.3); } .ds-insert-pub { position: absolute; top: 56px; left: 80px; width: 160px; height: 48px; background: var(--ocre, #d9a441); } .ds-insert-lecture { position: absolute; top: 68px; left: 256px; padding: 2px 6px; background: var(--ocre, #d9a441); color: var(--encre, #1d2a2f); font-family: 'Sofia Sans Condensed', 'Arial Narrow', sans-serif; font-size: 1rem; font-weight: 500; line-height: 20px; }"
     }
   ],
   "narrative": {
-    "northStar": "L’affiche sérigraphiée",
-    "overview": "Le site est une affiche de lutte tirée en sérigraphie, pas une page de logiciel. Un papier rose vif, grainé, couvre toute la page ; deux encres à plat, bleu nuit et rouge, y sont tirées ; une troisième, jaune fluo, ne sert qu’au bouton d’installation. Tout est à angle vif, rien ne flotte : la profondeur vient de la superposition des encres, jamais d’une ombre.\n\nLa composition s’ordonne sur une grille de douze colonnes et une seule ligne de repérage verticale, décentrée, sur laquelle se posent les croix de repérage. Les titres s’arrêtent avant elle, les corps de texte partent d’elle. Les lettres pochoir condensées très grasses font l’affiche ; une grotesque lisible fait le tract. Le seul endroit où le tirage montre son défaut est la bande rouge du slogan, évidée à l’emplacement des lettres et légèrement hors repérage.\n\nDensité basse, grands blancs verticaux (9 rem en tête de partie), peu de composants, chacun avec un seul rôle.",
+    "northStar": "Le compte rendu d'enregistreur",
+    "overview": "Le site est le compte rendu d'une soirée de live, établi comme un enregistrement du sommeil. Toute la page est une feuille de papier d'enregistreur vert pâle, réglée en grands carreaux de 40 px et petits de 8 px. On y écrit à l'encre vert-noir, en trois valeurs ; une seule couleur d'événement, l'ocre, marque les pubs comme un surligneur sur un tracé. Le papier n'est pas un décor posé derrière la page : c'est la géométrie de la page. Les hauteurs de ligne, les marges, les blocs et les pistes tombent sur sa réglure.\n\nLa densité est celle d'un document technique lisible par tous : colonnes de lecture modérées, titres condensés, filets d'un pixel pour séparer, aucune carte. La preuve est montrée par des tracés (la bande qui défile, le relevé d'une heure) et chaque explication est épinglée au tracé à l'instant qu'elle décrit. Le monde refuse la page de bloqueur habituelle : fond sombre, titre centré, capture du lecteur, trois cartes d'avantages. Rien de Twitch dans l'allure (ni son violet, ni son lecteur).",
     "keyCharacteristics": [
-      "Papier rose grainé, encres à plat, aucun dégradé décoratif.",
-      "Jaune réservé à l’action d’installer.",
-      "Aucun arrondi, aucune ombre.",
-      "Une ligne de repérage décentrée, des croix posées dessus.",
-      "Affiche pochoir pour la voix, grotesque pour l’explication."
+      "Papier réglé (40 px et 8 px) sur toute la page, centré pour que le cadre tombe sur ses lignes.",
+      "Trois valeurs d'encre, plus l'ocre réservé aux pubs.",
+      "Sofia Sans Condensed pour titres, pistes, graduations et boutons ; Sofia Sans pour le texte.",
+      "Hauteur de ligne de 24 px, toutes les cotes verticales en multiples de 8.",
+      "Filets d'un pixel, peints en fond ; angles droits, ni ombre ni arrondi.",
+      "Inserts de papier clair pour les tracés (bande et relevé), réglés depuis leur bord haut."
     ],
     "rules": [
-      {
-        "name": "La règle de l’encre jaune",
-        "body": "Le jaune signale une seule action : installer (ou choisir sa famille de navigateurs pour installer). Un élément jaune qui ne mène pas à l’installation est une erreur.",
-        "section": "colors"
-      },
-      {
-        "name": "La règle des deux encres",
-        "body": "Hors du jaune, tout s’imprime en bleu nuit ou en rouge sur le papier. Un ton plus clair ou plus doux se fait en mélangeant l’encre bleue au papier (`color-mix` en oklab), pas en ajoutant une couleur.",
-        "section": "colors"
-      },
-      {
-        "name": "La règle de l’affiche et du tract",
-        "body": "Affiche ne sert qu’à ce qui se lit de loin : slogan, titres de partie, marque, chiffres d’étapes, bouton jaune. Tout ce qui se lit de près est en Texte.",
-        "section": "typography"
-      },
-      {
-        "name": "La règle des capitales",
-        "body": "Seul le slogan est en capitales. Libellés, boutons, titres et liens restent en casse normale, sans espacement élargi.",
-        "section": "typography"
-      },
-      {
-        "name": "La règle du tirage à plat",
-        "body": "Pas de `box-shadow`, pas de flou, pas de verre, pas de lueur. Un élément se détache par sa couleur d’encre, pas par une élévation.",
-        "section": "elevation"
-      },
-      {
-        "name": "La règle du seul défaut",
-        "body": "Le décalage de repérage (de 1,5 à 3 px) n’existe que dans la bande rouge du slogan. Le reste du tirage est parfaitement calé.",
-        "section": "elevation"
-      },
-      {
-        "name": "La règle de l’angle vif",
-        "body": "Aucun arrondi, sur aucun élément, à aucune taille.",
-        "section": "shapes"
-      }
+      { "name": "La règle des trois encres", "body": "L'encre a trois valeurs : encre pour ce qui se lit et se trace, encre-2 pour ce qui annote, la réglure (reglure-forte et reglure) pour ce qui structure. encre-survol n'existe que comme état du bouton plein. Une quatrième valeur de gris ou de vert ne s'ajoute pas.", "section": "colors" },
+      { "name": "La règle de l'ocre", "body": "L'ocre signifie « une pub ». Il ne sert ni à un lien, ni à un bouton, ni à une mise en avant, ni à un badge. Seule tolérance hors tracé : la sélection de texte du navigateur (::selection), qui le prend sur fond d'encre.", "section": "colors" },
+      { "name": "La règle des 24 px", "body": "Tout texte courant et tout titre de bloc a une hauteur de ligne de 24 px (--ligne), soit trois petits carreaux. Les grands titres arrondissent leur interligne au multiple de 8 supérieur. Pas d'interligne sans unité qui ferait sortir le texte de la réglure.", "section": "typography" },
+      { "name": "La règle des deux largeurs", "body": "Condensée pour ce qui s'inscrit sur l'enregistrement, normale pour ce qui se lit. Pas de troisième famille, pas de capitales espacées.", "section": "typography" },
+      { "name": "La règle de la seule géométrie", "body": "Une seule grille, celle du papier. Un bloc ne se cale pas « à l'œil » : sa hauteur, sa marge et sa position verticale se ramènent à des carreaux de 8 ou 40 px.", "section": "layout" },
+      { "name": "La règle des filets peints", "body": "Les filets horizontaux (têtes de postes, pied, étapes, questions, bords des inserts) sont des dégradés d'un pixel peints en fond (--filet-encre, --filet), jamais des border : ils n'ajoutent aucune hauteur et ne décalent rien de la réglure. Seuls les filets verticaux (bords de la fenêtre de bande, attaches des notes et des étiquettes de pub) et le contour des contrôles sont des bordures.", "section": "elevation" },
+      { "name": "La règle du papier plat", "body": "Rien ne flotte au-dessus du papier. Pas d'ombre, même au survol.", "section": "elevation" }
     ],
     "dos": [
-      "Do coder uniquement avec les jetons de `:root` (encres, échelle `e-1` à `e-10`, `trait`, `trait-fin`, `rayon`, `sortie`, durées).",
-      "Do réserver le jaune au bouton d’installation, avec l’inversion bleu et jaune au survol.",
-      "Do poser chaque nouvelle partie sur la grille de douze colonnes : titre avant la ligne de repérage, corps à partir d’elle, et sa croix centrée sur la ligne.",
-      "Do dire une donnée par une trame d’impression (aplat, points, hachures) en encre bleue ou rouge, comme les pistes.",
-      "Do garder un seul effet de survol (inversion d’encres, ou épaississement du soulignement) et seulement sur ce qui est cliquable.",
-      "Do reprendre le même composant pour le même rôle : un rang d’installation ouvre sur un filet rouge, une question entre deux filets fins, un petit texte en encre douce.",
-      "Do arrêter toute animation sous `prefers-reduced-motion`."
+      "Do poser chaque cote verticale sur un multiple de 8 et chaque bloc majeur sur une ligne de grands carreaux de 40 px.",
+      "Do garder une hauteur de ligne de 24 px pour le texte et les titres de bloc.",
+      "Do peindre les filets horizontaux en fond (--filet-encre, --filet) plutôt qu'en bordure.",
+      "Do réserver l'ocre aux pubs, sur les tracés et dans la lecture sous les plumes.",
+      "Do tirer un tracé sur un insert de papier-clair bordé de deux filets d'encre, avec sa réglure partie de son bord haut.",
+      "Do épingler une explication au tracé par un filet vertical d'encre, à l'instant qu'elle décrit.",
+      "Do donner à toute animation un arrêt : bouton Pause, arrêt hors écran, image fixe avec prefers-reduced-motion.",
+      "Do utiliser le R nu à l'encre dans la page, et la tuile ocre seulement pour l'icône et le favicon."
     ],
     "donts": [
-      "Don't ajouter une ombre portée, un flou, du verre ou une lueur.",
-      "Don't arrondir un angle.",
-      "Don't utiliser le jaune pour autre chose que l’installation, ni le rouge pour du texte.",
-      "Don't ajouter une teinte : un ton plus doux se fait en mélangeant l’encre bleue au papier.",
-      "Don't étendre le défaut de repérage hors de la bande du slogan.",
-      "Don't poser une croix de repérage ailleurs que sur la ligne (ou au milieu de la marge sur téléphone).",
-      "Don't mettre en capitales autre chose que le slogan, ni espacer les lettres d’un libellé.",
-      "Don't imiter Twitch : ni son violet, ni son logo, ni l’allure de son lecteur."
+      "Don't utiliser d'ombre, d'arrondi, de flou ou de verre : le système est plat et à angles droits.",
+      "Don't ajouter une quatrième valeur d'encre ni une deuxième couleur d'événement.",
+      "Don't donner l'ocre à un lien, un bouton ou une mise en avant.",
+      "Don't ranger le contenu en cartes : des rangées séparées par des filets.",
+      "Don't reprendre quoi que ce soit de Twitch (violet, lecteur) ni du Pokémon dont vient le nom.",
+      "Don't introduire une troisième famille de caractères, ni des capitales espacées.",
+      "Don't poser la tuile ocre du logo dans la page."
     ]
   }
 }

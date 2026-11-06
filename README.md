@@ -137,9 +137,10 @@ powershell -ExecutionPolicy Bypass -File .\build.ps1
 
 - **Manifestes** : `extension/manifest.base.json` (commun), complété par `manifest.firefox.json`
   ou `manifest.chrome.json` ; `tools/manifest.mjs` les fusionne.
-- **Logo** : `extension/icon.svg` est le seul fichier source. Firefox l'utilise tel quel et le
-  build en tire les PNG de Chrome (`tools/icons.mjs`). Pour changer de logo, remplacer ce fichier
-  par un SVG carré.
+- **Logo** : `extension/icon.svg` est le seul fichier source. Firefox l'utilise tel quel, le
+  build en tire les PNG de Chrome (`tools/icons.mjs`) et le site son favicon et le signe de la
+  page. Pour changer de logo, remplacer ce fichier par un SVG carré qui garde la forme décrite
+  dans `site/README.md` (« Logo et favicon »).
 - **Adresses** : seule l'adresse de base du site se règle, `siteUrl` dans `distribution.json`.
   Les chemins sont fixes (`tools/common.ps1`) et partagés avec le site :
   `/telecharger/ronflux-firefox.xpi`, `/telecharger/ronflux-chrome.zip`,

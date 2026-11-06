@@ -1,280 +1,277 @@
 ---
 name: Ronflux
-description: Affiche de lutte sérigraphiée pour le site de Ronflux, bloqueur des pubs des lives Twitch.
+description: Le compte rendu d'une soirée de live, tiré sur papier d'enregistreur, pour le site de Ronflux, bloqueur des pubs des lives Twitch.
 colors:
-  papier: "#ff8fb8"
-  encre: "#13286b"
-  encre-douce: "color-mix(in oklab, #13286b 86%, #ff8fb8)"
-  encre-trame: "color-mix(in oklab, #13286b 12%, #ff8fb8)"
-  encre-rouge: "#e3201b"
-  encre-jaune: "#f2ff3d"
-  encre-surimpression: "#11050b"
+  papier: "#eef2ec"
+  papier-clair: "#f6f8f4"
+  reglure: "#dfe8e1"
+  reglure-forte: "#c6d6ca"
+  encre: "#1d2a2f"
+  encre-2: "#4a5c60"
+  encre-survol: "#34474e"
+  ocre: "#d9a441"
+  ocre-voile: "rgb(217 164 65 / 0.3)"
 typography:
   display:
-    fontFamily: "Affiche, Arial Narrow, sans-serif"
-    fontSize: "clamp(4.25rem, min(21vw, 22svh), 16rem)"
-    fontWeight: 900
-    lineHeight: 0.8
-    letterSpacing: "-0.005em"
-  marque-pied:
-    fontFamily: "Affiche, Arial Narrow, sans-serif"
-    fontSize: "clamp(5rem, 30vw, 34rem)"
-    fontWeight: 900
-    lineHeight: 0.78
+    fontFamily: "Sofia Sans Condensed, Arial Narrow, sans-serif"
+    fontSize: "clamp(2.5rem, 1.1rem + 4.2vw, 4.75rem)"
+    fontWeight: 700
+    lineHeight: "round(up, 1.05em, 8px)"
+    letterSpacing: "-0.01em"
+  display-second:
+    fontFamily: "Sofia Sans Condensed, Arial Narrow, sans-serif"
+    fontSize: "clamp(2.5rem, 1.1rem + 4.2vw, 4.75rem)"
+    fontWeight: 380
+    lineHeight: "round(up, 1.05em, 8px)"
     letterSpacing: "-0.01em"
   headline:
-    fontFamily: "Affiche, Arial Narrow, sans-serif"
-    fontSize: "clamp(2.75rem, 1.4rem + 5vw, 6rem)"
-    fontWeight: 850
-    lineHeight: 0.9
-  chiffre:
-    fontFamily: "Affiche, Arial Narrow, sans-serif"
-    fontSize: "3.25rem"
-    fontWeight: 900
-    lineHeight: 0.8
-  bouton:
-    fontFamily: "Affiche, Arial Narrow, sans-serif"
-    fontSize: "clamp(1.5rem, 1.2rem + 0.8vw, 2rem)"
-    fontWeight: 800
-    lineHeight: 1
-    letterSpacing: "0.01em"
-  marque:
-    fontFamily: "Affiche, Arial Narrow, sans-serif"
-    fontSize: "2rem"
-    fontWeight: 900
-    lineHeight: 1
-    letterSpacing: "0.01em"
-  title:
-    fontFamily: "Texte, system-ui, sans-serif"
-    fontSize: "1.25rem"
+    fontFamily: "Sofia Sans Condensed, Arial Narrow, sans-serif"
+    fontSize: "clamp(2rem, 1.5rem + 1.6vw, 2.75rem)"
     fontWeight: 700
-    lineHeight: 1.25
-  tract:
-    fontFamily: "Texte, system-ui, sans-serif"
-    fontSize: "clamp(1.125rem, 1rem + 0.4vw, 1.3125rem)"
+    lineHeight: "round(up, 1.08em, 8px)"
+  title-poste:
+    fontFamily: "Sofia Sans Condensed, Arial Narrow, sans-serif"
+    fontSize: "1.625rem"
+    fontWeight: 700
+    lineHeight: "32px"
+  title:
+    fontFamily: "Sofia Sans Condensed, Arial Narrow, sans-serif"
+    fontSize: "1.375rem"
+    fontWeight: 700
+    lineHeight: "24px"
+  question:
+    fontFamily: "Sofia Sans Condensed, Arial Narrow, sans-serif"
+    fontSize: "1.3125rem"
+    fontWeight: 600
+    lineHeight: "24px"
+  bouton:
+    fontFamily: "Sofia Sans Condensed, Arial Narrow, sans-serif"
+    fontSize: "1.375rem"
+    fontWeight: 600
+    lineHeight: "24px"
+  marque:
+    fontFamily: "Sofia Sans Condensed, Arial Narrow, sans-serif"
+    fontSize: "1.75rem"
+    fontWeight: 700
+    lineHeight: "32px"
+  navigation:
+    fontFamily: "Sofia Sans Condensed, Arial Narrow, sans-serif"
+    fontSize: "1.1875rem"
     fontWeight: 500
-    lineHeight: 1.45
+    lineHeight: "24px"
+  piste:
+    fontFamily: "Sofia Sans Condensed, Arial Narrow, sans-serif"
+    fontSize: "1rem"
+    fontWeight: 600
+    lineHeight: "24px"
+    fontFeature: "tnum"
+  graduation:
+    fontFamily: "Sofia Sans Condensed, Arial Narrow, sans-serif"
+    fontSize: "0.9375rem"
+    fontWeight: 600
+    lineHeight: "24px"
+    fontFeature: "tnum"
   body:
-    fontFamily: "Texte, system-ui, sans-serif"
+    fontFamily: "Sofia Sans, system-ui, sans-serif"
     fontSize: "1.0625rem"
     fontWeight: 400
-    lineHeight: 1.55
+    lineHeight: "24px"
   label:
-    fontFamily: "Texte, system-ui, sans-serif"
+    fontFamily: "Sofia Sans, system-ui, sans-serif"
     fontSize: "0.9375rem"
     fontWeight: 400
-    lineHeight: 1.55
+    lineHeight: "24px"
   code:
     fontFamily: "ui-monospace, Cascadia Mono, Menlo, Consolas, monospace"
-    fontWeight: 600
+    fontSize: "0.875em"
+    lineHeight: "22px"
 rounded:
-  rayon: "0"
+  angle: "0"
 spacing:
-  e-1: "0.25rem"
-  e-2: "0.5rem"
-  e-3: "0.75rem"
-  e-4: "1rem"
-  e-5: "1.5rem"
-  e-6: "2rem"
-  e-7: "3rem"
-  e-8: "4rem"
-  e-9: "6rem"
-  e-10: "9rem"
-  marge: "clamp(1rem, 4vw, 4rem)"
-  gouttiere: "clamp(1rem, 2vw, 2rem)"
-  entete-h: "4.5rem"
+  u: "8px"
+  u2: "16px"
+  u3: "24px"
+  u4: "32px"
+  carreau: "40px"
+  u8: "64px"
+  double-carreau: "80px"
+  section: "120px"
+  section-telephone: "96px"
+  gouttiere: "160px"
+  lecture: "160px"
+  cadre: "min(1240px, calc(round(down, 100% - 104px, 80px) + 40px))"
 components:
-  bouton-installer:
-    backgroundColor: "{colors.encre-jaune}"
-    textColor: "{colors.encre}"
-    typography: "{typography.bouton}"
-    rounded: "{rounded.rayon}"
-    padding: "0.5em 0.85em 0.45em"
-  bouton-installer-hover:
+  bouton-encre:
     backgroundColor: "{colors.encre}"
-    textColor: "{colors.encre-jaune}"
-  bouton-copier:
+    textColor: "{colors.papier}"
+    typography: "{typography.bouton}"
+    rounded: "{rounded.angle}"
+    padding: "0 28px"
+    height: "56px"
+  bouton-encre-hover:
+    backgroundColor: "{colors.encre-survol}"
+    textColor: "{colors.papier}"
+  bouton-texte:
     backgroundColor: "transparent"
     textColor: "{colors.encre}"
-    typography: "{typography.label}"
-    rounded: "{rounded.rayon}"
-    padding: "0.45em 0.8em"
-  bouton-copier-hover:
-    backgroundColor: "{colors.encre}"
-    textColor: "{colors.papier}"
+    rounded: "{rounded.angle}"
+    padding: "0 12px"
+    height: "32px"
+  bouton-texte-hover:
+    backgroundColor: "{colors.papier-clair}"
+    textColor: "{colors.encre}"
   adresse-code:
-    backgroundColor: "{colors.encre-trame}"
+    backgroundColor: "{colors.papier-clair}"
     textColor: "{colors.encre}"
     typography: "{typography.code}"
-    rounded: "{rounded.rayon}"
-    padding: "0.3em 0.55em"
-  piste-live:
-    backgroundColor: "{colors.encre}"
-    height: "1.75rem"
-  piste-pub:
-    backgroundColor: "{colors.encre-rouge}"
-    height: "3.5rem"
-  lien-evitement:
-    backgroundColor: "{colors.encre}"
-    textColor: "{colors.papier}"
-    padding: "{spacing.e-2} {spacing.e-4}"
+    rounded: "{rounded.angle}"
+    padding: "4px 10px"
+  lecture-pub:
+    backgroundColor: "{colors.ocre}"
+    textColor: "{colors.encre}"
+    typography: "{typography.piste}"
+    rounded: "{rounded.angle}"
+    padding: "2px 6px"
 ---
 
 # Design System: Ronflux
 
 ## Overview
 
-**Creative North Star: "L’affiche sérigraphiée"**
+**Creative North Star: « Le compte rendu d'enregistreur »**
 
-Le site est une affiche de lutte tirée en sérigraphie, pas une page de logiciel. Un papier rose vif, grainé, couvre toute la page ; deux encres à plat, bleu nuit et rouge, y sont tirées ; une troisième, jaune fluo, ne sert qu’au bouton d’installation. Tout est à angle vif, rien ne flotte : la profondeur vient de la superposition des encres, jamais d’une ombre.
+Le site est le compte rendu d'une soirée de live, établi comme un enregistrement du sommeil. Toute la page est une feuille de papier d'enregistreur vert pâle, réglée en grands carreaux de 40 px et petits de 8 px. On y écrit à l'encre vert-noir, en trois valeurs ; une seule couleur d'événement, l'ocre, marque les pubs comme un surligneur sur un tracé. Le papier n'est pas un décor posé derrière la page : c'est la géométrie de la page. Les hauteurs de ligne, les marges, les blocs et les pistes tombent sur sa réglure.
 
-La composition s’ordonne sur une grille de douze colonnes et une seule ligne de repérage verticale, décentrée, sur laquelle se posent les croix de repérage. Les titres s’arrêtent avant elle, les corps de texte partent d’elle. Les lettres pochoir condensées très grasses font l’affiche ; une grotesque lisible fait le tract. Le seul endroit où le tirage montre son défaut est la bande rouge du slogan, évidée à l’emplacement des lettres et légèrement hors repérage.
-
-Densité basse, grands blancs verticaux (9 rem en tête de partie), peu de composants, chacun avec un seul rôle.
+La densité est celle d'un document technique lisible par tous : colonnes de lecture modérées, titres condensés, filets d'un pixel pour séparer, aucune carte. La preuve est montrée par des tracés (la bande qui défile, le relevé d'une heure) et chaque explication est épinglée au tracé à l'instant qu'elle décrit. Le monde refuse la page de bloqueur habituelle : fond sombre, titre centré, capture du lecteur, trois cartes d'avantages. Rien de Twitch dans l'allure (ni son violet, ni son lecteur).
 
 **Key Characteristics:**
-- Papier rose grainé, encres à plat, aucun dégradé décoratif.
-- Jaune réservé à l’action d’installer.
-- Aucun arrondi, aucune ombre.
-- Une ligne de repérage décentrée, des croix posées dessus.
-- Affiche pochoir pour la voix, grotesque pour l’explication.
+- Papier réglé (40 px et 8 px) sur toute la page, centré pour que le cadre tombe sur ses lignes.
+- Trois valeurs d'encre, plus l'ocre réservé aux pubs.
+- Sofia Sans Condensed pour titres, pistes, graduations et boutons ; Sofia Sans pour le texte.
+- Hauteur de ligne de 24 px, toutes les cotes verticales en multiples de 8.
+- Filets d'un pixel, peints en fond ; angles droits, ni ombre ni arrondi.
+- Inserts de papier clair pour les tracés (bande et relevé), réglés depuis leur bord haut.
 
 ## Colors
 
-Un papier, deux encres et une encre réservée ; les tons intermédiaires sont l’encre bleue mélangée au papier, jamais une nouvelle teinte.
+Une palette de table traçante : papier vert pâle, encre vert-noir, et une seule couleur d'événement.
 
 ### Primary
-- **Bleu nuit d’encre** (`encre`) : toute l’encre courante. Texte, titres, slogan, segments « live » des pistes, filets fins, croix de repérage, contour de focus, sélection de texte (fond bleu, texte papier), survol du bouton d’installation.
-
-### Secondary
-- **Rouge de sérigraphie** (`encre-rouge`) : la deuxième encre. Bande en biais du slogan (grainée comme le papier), segments « pub » des pistes et leur légende, filet épais en tête de chaque rang d’installation. Jamais pour du texte.
-
-### Tertiary
-- **Jaune fluo** (`encre-jaune`) : le fond du bouton d’installation, et son texte au survol. Rien d’autre.
+- **Ocre de pub** (`ocre`) : la pub, et rien d'autre. Bloc plein sur la piste « Twitch diffuse » pendant une pub, fond de la lecture « Une pub » sous les plumes. C'est la seule couleur chaude de la page.
+- **Voile d'ocre** (`ocre-voile`, ocre à 30 %) : la bande verticale qui couvre toute la hauteur d'un tracé pendant une pub, sur la bande comme sur le relevé.
 
 ### Neutral
-- **Papier rose** (`papier`) : fond de toute la page, sous la texture `grain.svg` (240 px, bruit teinté de l’encre bleue). Aussi la couleur de l’évidement de la bande rouge et du fond de la tête de lecture.
-- **Encre douce** (`encre-douce`, 86 % d’encre dans le papier) : texte secondaire en petit corps (faits sous le bouton, légendes de figure, mentions du pied).
-- **Trame** (`encre-trame`, 12 % d’encre dans le papier) : fond de l’adresse à copier, seul aplat clair de la page.
-- **Surimpression** (`encre-surimpression`) : bleu sous rouge en multiplication. Ne sert qu’au chevauchement des lettres et de la bande rouge dans le slogan.
+- **Encre** (`encre`) : texte, titres, tracés, plumes, filets forts (bord haut et bas des inserts, filet de tête des postes et du pied), fond du bouton plein, contour de focus.
+- **Encre seconde** (`encre-2`) : annotations. Légendes, faits sous le bouton, heures des notes, graduations du relevé, mentions du pied, lecture « En veille ».
+- **Encre de survol** (`encre-survol`) : fond du bouton plein au survol, seule variation d'état de l'encre.
+- **Papier** (`papier`) : fond de la page, texte du bouton plein.
+- **Papier clair** (`papier-clair`) : papier des tracés (bande et relevé), fond de l'adresse à copier, survol des boutons de texte, cache des noms de pistes sur téléphone.
+- **Réglure forte** (`reglure-forte`) : grands carreaux et filets secondaires (entre étapes, entre questions, contour de l'adresse).
+- **Réglure** (`reglure`) : petits carreaux.
 
 ### Named Rules
-**La règle de l’encre jaune.** Le jaune signale une seule action : installer (ou choisir sa famille de navigateurs pour installer). Un élément jaune qui ne mène pas à l’installation est une erreur.
+**La règle des trois encres.** L'encre a trois valeurs : `encre` pour ce qui se lit et se trace, `encre-2` pour ce qui annote, la réglure (`reglure-forte` et `reglure`) pour ce qui structure. `encre-survol` n'existe que comme état du bouton plein. Une quatrième valeur de gris ou de vert ne s'ajoute pas.
 
-**La règle des deux encres.** Hors du jaune, tout s’imprime en bleu nuit ou en rouge sur le papier. Un ton plus clair ou plus doux se fait en mélangeant l’encre bleue au papier (`color-mix` en oklab), pas en ajoutant une couleur.
+**La règle de l'ocre.** L'ocre signifie « une pub ». Il ne sert ni à un lien, ni à un bouton, ni à une mise en avant, ni à un badge. Seule tolérance hors tracé : la sélection de texte du navigateur (`::selection`), qui le prend sur fond d'encre.
 
 ## Typography
 
-**Display Font:** Affiche, Big Shoulders Stencil variable auto-hébergée (repli Arial Narrow, sans-serif)
-**Body Font:** Texte, Archivo variable auto-hébergée (repli system-ui, sans-serif)
-**Label/Mono Font:** pile système monospace (ui-monospace, Cascadia Mono, Menlo, Consolas) pour les adresses à copier
+**Display Font:** Sofia Sans Condensed (repli Arial Narrow), variable, auto-hébergée.
+**Body Font:** Sofia Sans (repli system-ui), variable, auto-hébergée.
+**Label/Mono Font:** pile monospace du système (ui-monospace, Cascadia Mono, Menlo, Consolas), pour les seules adresses à copier.
 
-**Character:** un pochoir condensé, très gras, qui parle fort comme une affiche collée, et une grotesque large et calme qui explique comme un tract. Les deux polices sont servies par le site, en `font-display: block`.
+**Character:** Une même grotesque en deux largeurs : la condensée pour tout ce qui s'inscrit sur l'enregistrement (titres, noms de pistes, graduations, lectures, boutons), la largeur normale pour ce qui se lit en phrases. Chiffres tabulaires partout où l'on lit des heures ou des versions.
 
 ### Hierarchy
-- **Display** (900, de 4,25 à 16 rem selon la largeur et la hauteur d’écran, interligne 0,8) : le slogan seul, en capitales, sur trois lignes qui descendent en escalier jusqu’à la ligne de repérage.
-- **Marque du pied** (900, de 5 à 34 rem, interligne 0,78) : le nom « Ronflux » en très grand, clôture de l’affiche.
-- **Headline** (850, de 2,75 à 6 rem, interligne 0,9, 16 ch au plus, équilibré) : titres de partie.
-- **Chiffre** (900, 3,25 rem, interligne 0,8) : numéros des étapes d’installation, en Affiche.
-- **Bouton** (800, de 1,5 à 2 rem, interligne 1) : libellé du bouton jaune, en Affiche, casse normale.
-- **Marque** (900, 2 rem) : le nom dans l’en-tête.
-- **Title** (700, 1,25 rem, interligne 1,25) : titres h3 en Texte (rangs d’installation, explications, questions). Les h4 des étapes prennent le corps du texte en 700.
-- **Tract** (500, de 1,125 à 1,3125 rem, interligne 1,45, 34 ch au plus) : les trois phrases du premier écran.
-- **Body** (400, 1,0625 rem, interligne 1,55) : texte courant, 42 à 65 ch selon le bloc.
-- **Label** (0,9375 rem) : petit texte, en encre douce ; chiffres tabulaires sur les règles de temps et les faits de version.
+- **Display** (700 puis 380, `clamp(2.5rem, 1.1rem + 4.2vw, 4.75rem)`, interligne arrondi au multiple de 8 supérieur, −0,01 em) : le titre d'ouverture, sur deux lignes ; la première en gras, la seconde en maigre.
+- **Headline** (700, `clamp(2rem, 1.5rem + 1.6vw, 2.75rem)`, interligne arrondi au multiple de 8) : titres de section, suivis de 40 px.
+- **Title** (700, 26 px sur 32 px pour les postes d'installation ; 22 px sur 24 px pour les notes ; 20 px sur 24 px pour les étapes ; 600, 21 px sur 24 px pour les questions).
+- **Body** (400, 17 px sur 24 px) : texte courant, colonnes bornées (36 à 52 ch pour la note d'ouverture, 68 ch pour les réponses, 72 ch pour les légendes).
+- **Label** (400, 15 px sur 24 px, `encre-2`) : faits, légendes, mentions, remarques « petit ».
+- **Piste et graduation** (condensée 600 ou 500, 15 à 16 px, chiffres tabulaires) : noms des pistes, lectures sous les plumes, heures, étiquettes « Pub ».
+- **Bouton** (condensée 600, 22 px, 20 px sur téléphone) et **navigation** (condensée 500, 19 px, 17 px sur téléphone).
 
 ### Named Rules
-**La règle de l’affiche et du tract.** Affiche ne sert qu’à ce qui se lit de loin : slogan, titres de partie, marque, chiffres d’étapes, bouton jaune. Tout ce qui se lit de près est en Texte.
+**La règle des 24 px.** Tout texte courant et tout titre de bloc a une hauteur de ligne de 24 px (`--ligne`), soit trois petits carreaux. Les grands titres arrondissent leur interligne au multiple de 8 supérieur. Pas d'interligne sans unité qui ferait sortir le texte de la réglure.
 
-**La règle des capitales.** Seul le slogan est en capitales. Libellés, boutons, titres et liens restent en casse normale, sans espacement élargi.
+**La règle des deux largeurs.** Condensée pour ce qui s'inscrit sur l'enregistrement, normale pour ce qui se lit. Pas de troisième famille, pas de capitales espacées.
 
 ## Layout
 
-Un cadre de 112 rem au plus, centré, avec une marge latérale fluide (`marge`, de 1 à 4 rem). Dedans, une grille d’une colonne sur téléphone, de douze colonnes à partir de 48 rem, avec une gouttière fluide (`gouttiere`, de 1 à 2 rem).
+**Le papier.** Le fond de `html` porte quatre dégradés d'un pixel : grands carreaux de 40 px en `reglure-forte`, petits de 8 px en `reglure`, positionnés depuis le centre haut. Le cadre de contenu (`--cadre`) mesure un nombre impair de grands carreaux, au plus 1240 px, pour que ses deux bords tombent sur des lignes de la réglure centrée ; sur téléphone, il s'arrondit au multiple de 16 px (avec 16 px de marge minimale de chaque côté).
 
-**La ligne de repérage** (`--ligne`) est le début d’une colonne : la 7e entre 48 et 64 rem, la 6e à partir de 64 rem. Ce qui s’accroche à gauche (bloc d’installation du premier écran, titres des rangs d’installation, questions, première mention du pied) occupe les colonnes 1 à la ligne ; ce qui part d’elle (tract, corps des rangs, réponses, seconde mention) va de la ligne au bord droit, ou jusqu’à la colonne 12 pour le tract et les réponses à partir de 64 rem. La troisième ligne du slogan commence aussi sur elle ; la deuxième est décalée de deux colonnes.
+**Le rythme.** Toutes les cotes verticales sont des multiples de 8 : en-tête de 80 px (64 sur téléphone), ouverture à 40 px du haut (24 sur téléphone), sections espacées de 120 px (96 sur téléphone), titres de section suivis de 40 px, postes et pied à 40 px de marge interne, étapes et questions à 24 px. La bande se pose à 64 px du bouton pour tomber sur une ligne de grands carreaux. Les écarts horizontaux restent sur la même échelle (16, 24, 32, 40, 80) ; quelques réglages internes de contrôles (12 px dans les boutons, 10 px dans la marque) en sortent.
 
-Premier écran : à partir de 64 rem de large et 40 rem de haut, l’affiche occupe toute la hauteur sous l’en-tête (4,5 rem), slogan en haut, bloc d’installation et tract en bas. Sur téléphone, le tract passe avant le bloc d’installation.
+**Les colonnes.** Une gouttière de 160 px (120 sur tablette, 0 sur téléphone) porte les noms des pistes et aligne le relevé sur la bande. Les postes d'installation et le pied sont en deux colonnes, 320 px puis le reste (200 px sur tablette, une colonne sur téléphone) ; les questions en 400 px puis le reste (une colonne dès la tablette). Le relevé découpe sa largeur en minutes de live (7, 17, 22 et 14 parts) pour que chaque note commence à la minute de sa pub.
 
-Rythme vertical sur l’échelle `e-1` à `e-10` : 9 rem au-dessus de chaque partie (la croix se pose au milieu), 4 rem sous un titre de partie, 3 rem de part et d’autre d’un rang d’installation, 2 rem pour une question. La figure des pistes et le mécanisme qui la suit partagent les mêmes proportions (en secondes de la soirée) : chaque explication commence sous sa coupure, à partir de 64 rem.
+**Points de rupture.** 1023 px (tablette : ouverture en une colonne, gouttière à 120) et 639 px (téléphone : gouttière à 0, noms des pistes posés sur le papier, relevé redessiné en version étroite, notes empilées).
 
-Les étapes d’installation passent sur deux colonnes quand leur conteneur dépasse 46 rem (requête de conteneur).
+### Named Rules
+**La règle de la seule géométrie.** Une seule grille, celle du papier. Un bloc ne se cale pas « à l'œil » : sa hauteur, sa marge et sa position verticale se ramènent à des carreaux de 8 ou 40 px.
 
 ## Elevation & Depth
 
-Aucune ombre portée, aucun relief. Toute la page est à plat, au même niveau que le papier. La profondeur vient de l’ordre de tirage des encres : la bande rouge passe sur le papier, les lettres bleues la chevauchent, et leur recouvrement donne la surimpression plus sombre. La seule `text-shadow` du système fait partie de cette construction (elle dessine la surimpression bleu sous rouge dans la bande du slogan, sans flou) : c’est une encre, pas une ombre.
+Le système est entièrement plat. Aucune ombre, aucun flou, aucun verre. La profondeur ne s'exprime que par le papier : un insert de `papier-clair`, bordé de deux filets d'encre, se lit comme une feuille tirée de l'enregistreur et posée sur la page. Son propre quadrillage repart de son bord haut, pour que les pistes tombent sur ses lignes, indépendamment de la réglure de la page.
 
 ### Named Rules
-**La règle du tirage à plat.** Pas de `box-shadow`, pas de flou, pas de verre, pas de lueur. Un élément se détache par sa couleur d’encre, pas par une élévation.
+**La règle des filets peints.** Les filets horizontaux (têtes de postes, pied, étapes, questions, bords des inserts) sont des dégradés d'un pixel peints en fond (`--filet-encre`, `--filet`), jamais des `border` : ils n'ajoutent aucune hauteur et ne décalent rien de la réglure. Seuls les filets verticaux (bords de la fenêtre de bande, attaches des notes et des étiquettes de pub) et le contour des contrôles sont des bordures.
 
-**La règle du seul défaut.** Le décalage de repérage (de 1,5 à 3 px) n’existe que dans la bande rouge du slogan. Le reste du tirage est parfaitement calé.
+**La règle du papier plat.** Rien ne flotte au-dessus du papier. Pas d'ombre, même au survol.
 
 ## Shapes
 
-Angles vifs partout (`rayon` : 0). Les formes sont des aplats rectangulaires, des filets et des trames. Deux épaisseurs de trait : `--trait` (3 px) pour le focus, le survol des liens et le filet rouge des rangs d’installation ; `--trait-fin` (1,5 px) pour le soulignement des liens, la règle de temps, les filets des questions et le contour de la tête de lecture. La seule forme oblique est la bande rouge du slogan (−1,6°). Les motifs des pistes sont des trames d’impression : points (5 px) et hachures à −45° (pas de 6 px).
+Angles droits partout (`rounded.angle`, 0) : boutons, adresse, inserts, lecture de pub. Filets d'un pixel, en `encre` pour ce qui borde un tracé ou ouvre un bloc majeur, en `reglure-forte` pour ce qui sépare des éléments de même niveau. Les seules formes rondes sont les plumes de l'enregistreur (cercles de 4 px de rayon, pleins d'encre quand elles écrivent, évidés sur papier clair quand elles sont levées) et la jambe du R du logo.
 
-**La règle de l’angle vif.** Aucun arrondi, sur aucun élément, à aucune taille.
+### Le logo
+Un R dont la jambe part en tracé de ronflement, dessiné en traits épais d'encre (12 et 10 unités sur 96). Un seul fichier, `extension/icon.svg`, en deux formes :
+- **L'icône** (extension, favicon) : le R d'encre sur une tuile carrée d'ocre, à angles droits, sans marge arrondie. C'est le seul endroit où l'ocre sort des pubs, parce que l'icône vit hors de la page, à 16 px dans une barre d'outils.
+- **Le signe dans la page** : le R nu, sans tuile, à l'encre du texte (`currentColor`), 32 px, à côté du nom en condensée 700. Le build le tire de l'icône (suppression de la tuile, recadrage) et échoue si l'icône change de forme.
 
 ## Components
 
 ### Buttons
-- **Shape :** angles vifs (0).
-- **Bouton d’installation :** fond jaune, texte bleu en Affiche 800, icône de téléchargement au trait carré (0,9 em, trait 2,6) quand le bouton télécharge ou installe ; pas d’icône sur les boutons de choix de famille. Le libellé nomme le navigateur reconnu (« Installer pour Firefox », « Télécharger pour Chrome »).
-- **Hover / Focus :** au survol, les encres s’inversent (fond bleu, texte jaune), en 160 ms sur la courbe `sortie`. Focus : contour bleu de 3 px décalé de 3 px, commun à toute la page.
-- **Bouton de copie :** secondaire, transparent, contour d’encre bleue, texte en Texte 600 au petit corps. Au survol, fond bleu et texte papier. Caché sans presse-papiers ; son libellé devient « Copié » pendant 2,5 s.
-
-### Blocs selon le navigateur
-Le bloc d’installation du premier écran existe en trois états, choisis avant le premier affichage par l’attribut `data-nav` de `<html>` (`firefox`, `chromium`, sinon `autre`, plus `mobile`) et le nom du navigateur Chromium (`data-nav-nom`) : un seul bouton jaune pour le navigateur reconnu, une ligne de faits en petit corps (version, prérequis), puis les autres versions en liens. Sans détection, deux boutons jaunes de même largeur l’un sous l’autre. Sur téléphone, une phrase en 600 renvoie à un navigateur d’ordinateur, sans bouton.
-
-### Pistes de la soirée (composant signature)
-Deux pistes du même live, alignées sur une règle de temps en chiffres tabulaires soulignée d’un filet fin. Chaque piste a un nom en 700, une rangée de notes (filet vertical d’un côté, texte petit en 600) et une bande. Vocabulaire des segments :
-- **Live** : aplat bleu, mi-hauteur (1,75 rem).
-- **Pub** : aplat rouge, pleine hauteur (3,5 rem).
-- **Diffusion de secours** : trame de points bleus.
-- **Pub masquée** : hachures bleues.
-Les colonnes suivent la durée réelle en secondes, avec 3 px au moins pour une coupure. Les mêmes motifs servent de légende (3 × 0,875 rem) au-dessus de chaque explication.
-
-### Rangs d’installation
-Chaque famille de navigateurs est un rang de la grille, ouvert par un filet rouge de 3 px : titre à gauche de la ligne, corps à droite. Le bouton jaune y est précédé de 1,5 rem. Les étapes sont une liste ordonnée, numéros en Affiche 900 à gauche du texte. Le rang du userscript est discret : tout en petit corps, sans bouton, un simple lien.
+Pleins, plats, condensés : un bouton d'encre est une étiquette imprimée.
+- **Shape :** angles droits (0), hauteur 56 px, 28 px de marge horizontale (24 sur téléphone), icône de trait de 22 px à 12 px du texte.
+- **Bouton d'encre :** fond `encre`, texte `papier`, condensée 600 à 22 px. Il porte l'action d'installer ou de télécharger, avec l'icône de téléchargement (flèche vers un trait) quand il télécharge un fichier.
+- **Hover / Focus :** un seul effet au survol, le fond passe à `encre-survol` (160 ms, `cubic-bezier(0.22, 1, 0.36, 1)`). Focus : contour d'encre de 2 px, décalé de 3 px.
+- **Bouton de texte** (Copier, Pause) : 32 px de haut, contour d'encre d'un pixel, fond transparent, condensée 600 à 16 px ; au survol, fond `papier-clair`. Il reste caché tant que son action n'est pas possible (presse-papiers absent, animation réduite).
 
 ### Adresse à copier
-Code monospace 600 sur la trame claire, suivi du bouton de copie, sur une ligne qui passe à la ligne au besoin.
-
-### Questions
-Une question par rang de grille, entre deux filets fins bleus (le dernier fermé en bas) : la question en h3 à gauche de la ligne, la réponse à droite, 65 ch au plus.
+Le code d'une adresse (`chrome://extensions`) sur un petit insert de `papier-clair`, contour d'un pixel en `reglure-forte`, 4 px sur 10 px de marge, interligne 22 px, suivi de son bouton Copier. Le libellé passe à « Copié » pendant 2,5 s.
 
 ### Navigation
-En-tête de 4,5 rem : la marque en Affiche à gauche, deux liens d’ancre en Texte 600 à droite, soulignés en trait fin, trait épais au survol. Un lien d’évitement bleu sur papier apparaît au focus.
+Trois liens en condensée 500 à 19 px, espacés de 32 px, sans soulignement au repos et soulignés au survol. Sur téléphone, le lien « Fonctionnement » disparaît. Les liens du texte sont soulignés d'un pixel (décalage 0,2 em), deux pixels au survol.
 
-### Croix de repérage
-Une croix (cercle et deux axes, `repere.svg` en masque, teintée en encre bleue) en tête de chaque partie et du pied, 14 px sur téléphone, 28 px à partir de 48 rem. À partir de 48 rem, toutes sont centrées sur la ligne de repérage, au milieu de la marge haute de leur partie ; la croix du premier écran se pose au milieu de l’écart entre le slogan et le bloc d’installation. Sur téléphone, elles se rangent au milieu de la marge gauche.
+### Postes, étapes, questions
+Des rangées, jamais des cartes. Un poste d'installation s'ouvre par un filet d'encre et porte son titre dans la colonne de gauche ; ses étapes sont numérotées dans une colonne de 40 px (chiffre condensé 700) et séparées par des filets de réglure. Le poste Firefox et chacune des étapes Chrome finissent par « Une fois fait : » (condensée 700) suivi de ce que le visiteur doit voir. Les questions suivent la même logique : premier filet d'encre, les suivants en réglure, titre à gauche, réponse à droite.
 
-### Bande du slogan
-Le slogan est un h1 en Affiche. Une bande rouge grainée, pivotée de −1,6°, passe sous la deuxième ligne et déborde de la marge de part et d’autre. Par-dessus, une copie décorative du slogan, découpée à la bande et masquée aux lecteurs d’écran, en deux couches : l’évidement couleur papier, décalé du défaut de repérage, dont la surimpression ramenée à la place des lettres donne le bleu sous rouge ; puis les lettres bleues en mode `darken`, qui ne repassent en bleu que le papier de l’évidement. Le défaut vaut 1,5 à 3 px en horizontal et 0,75 à 1,25 px en vertical, proportionné au corps.
+### La bande (composant signature)
+L'enregistreur du premier écran, pleine largeur du cadre, 280 px de haut : une rangée de 40 px pour les étiquettes « Pub », puis trois pistes de 80 px serrées bord à bord (Twitch diffuse, Vous voyez, Ronflux). Trois colonnes : noms des pistes dans la gouttière, fenêtre bordée de filets verticaux d'encre, lectures à droite (heure en chiffres tabulaires, état de chaque piste).
+- **Le papier défile :** dans la fenêtre, un insert de `papier-clair` avec sa propre réglure glisse vers la gauche à 40 px par seconde sous trois plumes fixées sur le bord droit. Les tracés sont calculés au build (`src/enregistrement.js`) et écrits en SVG dans la page : sans JavaScript, la bande montre une image fixe, au milieu d'une pub.
+- **Pendant une pub :** voile d'ocre sur toute la hauteur, bloc plein d'ocre sur la piste Twitch, lecture « Une pub » sur fond d'ocre, piste Ronflux qui s'agite (trait de 2 px, lecture « Pub bloquée » en 700), piste « Vous voyez » continue.
+- **Pause et mouvement réduit :** un bouton de texte Pause (« Reprendre » une fois arrêté) sous la légende. Avec `prefers-reduced-motion: reduce`, la bande ne défile pas et le bouton reste caché ; elle s'arrête aussi hors de l'écran. Le défilement doux de l'ancre est coupé dans le même cas.
+- **Téléphone :** la gouttière tombe à 0 ; les noms des pistes se posent sur le papier, en haut à gauche de chaque piste, sur un cache de `papier-clair`, en 13 px.
 
-### Mouvement
-Courbe unique `sortie` (`cubic-bezier(0.16, 1, 0.3, 1)`) ; 160 ms pour les changements d’état (liens, boutons), en couleur ou épaisseur de trait seulement.
-- **Calage :** au chargement, l’évidement de la bande glisse d’un décalage de 0,3 em jusqu’à son léger défaut, en 900 ms après 0,15 s.
-- **Tête de lecture :** un trait papier de 3 px cerné de bleu traverse les deux pistes en 24 s, en boucle linéaire, et s’arrête au survol de la figure.
-- **Mouvement réduit :** pas de calage (la bande est directement à son défaut), pas de tête de lecture, aucune transition.
+### Le relevé
+Le même papier clair, tiré pour une heure de live en deux pistes de 80 px (Sans Ronflux, Avec Ronflux) : graduations horaires au-dessus, étiquettes de pubs attachées au tracé par un filet vertical d'encre, voile et bloc d'ocre aux pubs, masquage en pointillé de 4 px. Sous le relevé, trois notes épinglées chacune par un filet vertical d'encre qui part de la minute de sa pub. Sur téléphone, un tracé étroit dédié remplace le large et les notes s'empilent.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** coder uniquement avec les jetons de `:root` (encres, échelle `e-1` à `e-10`, `trait`, `trait-fin`, `rayon`, `sortie`, durées).
-- **Do** réserver le jaune au bouton d’installation, avec l’inversion bleu et jaune au survol.
-- **Do** poser chaque nouvelle partie sur la grille de douze colonnes : titre avant la ligne de repérage, corps à partir d’elle, et sa croix centrée sur la ligne.
-- **Do** dire une donnée par une trame d’impression (aplat, points, hachures) en encre bleue ou rouge, comme les pistes.
-- **Do** garder un seul effet de survol (inversion d’encres, ou épaississement du soulignement) et seulement sur ce qui est cliquable.
-- **Do** reprendre le même composant pour le même rôle : un rang d’installation ouvre sur un filet rouge, une question entre deux filets fins, un petit texte en encre douce.
-- **Do** arrêter toute animation sous `prefers-reduced-motion`.
+- **Do** poser chaque cote verticale sur un multiple de 8 et chaque bloc majeur sur une ligne de grands carreaux de 40 px.
+- **Do** garder une hauteur de ligne de 24 px pour le texte et les titres de bloc.
+- **Do** peindre les filets horizontaux en fond (`--filet-encre`, `--filet`) plutôt qu'en bordure.
+- **Do** réserver l'ocre aux pubs, sur les tracés et dans la lecture sous les plumes.
+- **Do** tirer un tracé sur un insert de `papier-clair` bordé de deux filets d'encre, avec sa réglure partie de son bord haut.
+- **Do** épingler une explication au tracé par un filet vertical d'encre, à l'instant qu'elle décrit.
+- **Do** donner à toute animation un arrêt : bouton Pause, arrêt hors écran, image fixe avec `prefers-reduced-motion`.
+- **Do** utiliser le R nu à l'encre dans la page, et la tuile ocre seulement pour l'icône et le favicon.
 
 ### Don't:
-- **Don't** ajouter une ombre portée, un flou, du verre ou une lueur.
-- **Don't** arrondir un angle.
-- **Don't** utiliser le jaune pour autre chose que l’installation, ni le rouge pour du texte.
-- **Don't** ajouter une teinte : un ton plus doux se fait en mélangeant l’encre bleue au papier.
-- **Don't** étendre le défaut de repérage hors de la bande du slogan.
-- **Don't** poser une croix de repérage ailleurs que sur la ligne (ou au milieu de la marge sur téléphone).
-- **Don't** mettre en capitales autre chose que le slogan, ni espacer les lettres d’un libellé.
-- **Don't** imiter Twitch : ni son violet, ni son logo, ni l’allure de son lecteur.
+- **Don't** utiliser d'ombre, d'arrondi, de flou ou de verre : le système est plat et à angles droits.
+- **Don't** ajouter une quatrième valeur d'encre ni une deuxième couleur d'événement.
+- **Don't** donner l'ocre à un lien, un bouton ou une mise en avant.
+- **Don't** ranger le contenu en cartes : des rangées séparées par des filets.
+- **Don't** reprendre quoi que ce soit de Twitch (violet, lecteur) ni du Pokémon dont vient le nom.
+- **Don't** introduire une troisième famille de caractères, ni des capitales espacées.
+- **Don't** poser la tuile ocre du logo dans la page.
