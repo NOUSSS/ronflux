@@ -191,6 +191,32 @@ Le premier `release.ps1` crée l'extension sur le compte AMO avec l'identifiant
 `{adf926d0-3333-45f4-b9d2-b54afdb0fc13}`, celui des installations existantes. Ne jamais le
 changer : elles ne recevraient plus les mises à jour.
 
+**Cloudflare Pages (site)**
+
+1. Créer le projet Pages qui sert le site. Son nom est celui de `cloudflarePagesProject` dans
+   `distribution.json` (`ronflux`) et donne l'adresse `ronflux.pages.dev`, déjà écrite dans les
+   paquets :
+
+   ```powershell
+   cd tools\deploy
+   npm ci
+   npx wrangler login
+   npx wrangler pages project create ronflux --production-branch main
+   cd ..\..
+   ```
+
+   `wrangler login` ouvre le navigateur pour autoriser wrangler sur le compte Cloudflare.
+   wrangler est installé à part, dans `tools/deploy`, pour que `npm ci` à la racine reste léger.
+2. Créer un jeton d'API Cloudflare avec les autorisations `Cloudflare Pages : Edit` et
+   `Account Settings : Read` (wrangler s'en sert pour trouver le compte), puis le ranger :
+
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File $HOME\.claude\scripts\secret.ps1 set cloudflare-pages
+   ```
+
+   Sans `cloudflare-pages`, `release.ps1` prend `cloudflare-write`, le jeton général du compte,
+   s'il est rangé.
+
 **Chrome Web Store**
 
 1. Créer un compte développeur sur https://chrome.google.com/webstore/devconsole (frais
@@ -198,7 +224,8 @@ changer : elles ne recevraient plus les mises à jour.
 2. « Nouvel article » → envoyer `ronflux-chrome.zip`, puis remplir la fiche, les pratiques de
    confidentialité et la distribution d'après [docs/chrome-web-store.md](docs/chrome-web-store.md)
    (visibilité « non répertoriée »).
-3. Une fois l'article accepté, mettre le lien de sa fiche sur le site.
+3. Une fois l'article accepté, mettre le lien de sa fiche dans la configuration du site
+   (`chromeWebStoreUrl`) : le bouton Chrome du site y mène alors directement.
 
 ### À chaque version
 
@@ -214,7 +241,7 @@ powershell -ExecutionPolicy Bypass -File .\release.ps1           # 1.0.2 → 1.0
 3. envoie la version Firefox à AMO sur le canal « unlisted » (`web-ext sign`) et récupère le
    `.xpi` signé, après avoir vérifié qu'il contient exactement les fichiers construits. La
    validation automatique d'AMO prend en général quelques minutes ;
-4. prépare `dist/publication/`, à déposer tel quel à la racine du site :
+4. prépare `dist/publication/`, avec l'arborescence du site :
 
    | Fichier | Adresse |
    |---|---|
@@ -223,27 +250,37 @@ powershell -ExecutionPolicy Bypass -File .\release.ps1           # 1.0.2 → 1.0
    | `telecharger/ronflux-chrome.zip` | `/telecharger/ronflux-chrome.zip` |
    | `telecharger/ronflux.user.js` | `/telecharger/ronflux.user.js` |
 
-Les clés ne sont déchiffrées qu'au moment de signer et passées à web-ext par l'environnement de
-son seul processus, jamais en argument ni à l'écran. Les autres variables `WEB_EXT_*` sont
-écartées pendant la signature.
+5. commite la montée de version, et seulement elle (les autres modifications de l'arbre de
+   travail restent en l'état), puis pose l'étiquette `vx.y.z` ;
+6. construit le site (`npm run build` dans `site/`), y ajoute `dist/publication/` et déploie le
+   tout sur Cloudflare Pages (`wrangler pages deploy`, branche de production `main`).
+   `updates.json` et le `.xpi` partent ainsi ensemble, car le premier contient l'empreinte du
+   second. Le script s'arrête si le site ne sert pas le `.xpi` en `application/x-xpinstall`
+   (fichier `_headers`) : Firefox le téléchargerait au lieu de proposer l'installation.
 
-Ensuite :
+Les clés et le jeton ne sont déchiffrés qu'au moment de s'en servir et passés à web-ext ou à
+wrangler par l'environnement de leur seul processus, jamais en argument ni à l'écran. Les autres
+variables `WEB_EXT_*`, `CLOUDFLARE_*`, `CF_*` et `WRANGLER_*` sont écartées le temps de l'appel.
 
-- publier `dist/publication/` sur le site (Cloudflare Pages) : `updates.json` et le `.xpi`
-  partent ensemble, car le premier contient l'empreinte du second. Le `.xpi` doit être servi en
-  `application/x-xpinstall` pour que Firefox propose l'installation au lieu de le télécharger ;
-- Chrome Web Store : onglet « Paquet » → « Importer un nouveau paquet » →
-  `dist/publication/telecharger/ronflux-chrome.zip` → « Envoyer pour examen » ;
-- committer la montée de version et la marquer : `git commit -am "Ronflux x.y.z"`, puis
-  `git tag vx.y.z`.
+Options : `-NoCommit` saute le commit et l'étiquette ; `-NoDeploy` saute le déploiement, et
+`dist/publication/` est alors à déposer à la racine du site. Sans dossier `site/`, le déploiement
+est sauté.
 
-**Reprise** : si le script s'arrête après la montée de version mais avant l'envoi à AMO, le
-relancer avec `-Version x.y.z` (la même). Si AMO a reçu la version mais que l'attente de la
-signature a expiré, télécharger le `.xpi` signé depuis la page de la version sur le Developer
-Hub, puis `release.ps1 -SignedXpi <fichier>` termine sans renvoyer la version (AMO refuse deux
-envois du même numéro).
+Seule l'étape du Chrome Web Store reste à la main : onglet « Paquet » → « Importer un nouveau
+paquet » → `dist/publication/telecharger/ronflux-chrome.zip` → « Envoyer pour examen ».
 
-**Changer l'adresse du site** : modifier `siteUrl` dans `distribution.json`. Les installations
+**Reprise** :
+
+- arrêt après la montée de version, avant l'envoi à AMO : relancer avec `-Version x.y.z` (la
+  même) ;
+- arrêt après la signature (déploiement en échec, par exemple) : le script affiche la commande
+  de reprise, `release.ps1 -SignedXpi <fichier>`, qui termine sans renvoyer la version à AMO (il
+  refuse deux envois du même numéro). Un commit ou une étiquette déjà posés ne sont pas refaits ;
+- AMO a reçu la version mais l'attente de la signature a expiré : télécharger le `.xpi` signé
+  depuis la page de la version sur le Developer Hub, puis `release.ps1 -SignedXpi <fichier>`.
+
+**Changer l'adresse du site** : modifier `siteUrl` dans `distribution.json` (et
+`cloudflarePagesProject` si le site passe sur un autre projet Pages). Les installations
 existantes (Firefox par `updates.json`, userscript par `@updateURL`) interrogent l'ancienne
 adresse jusqu'à ce qu'elles reçoivent une version construite avec la nouvelle : garder
 l'ancienne adresse en service le temps d'une version au moins.

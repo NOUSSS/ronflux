@@ -37,6 +37,15 @@ function Get-SiteUrls {
   [pscustomobject] $urls
 }
 
+# Projet Cloudflare Pages qui sert le site (release.ps1 y déploie).
+function Get-PagesProject {
+  $name = [string] (Read-Json 'distribution.json').cloudflarePagesProject
+  if ($name -notmatch '^[a-z0-9]([a-z0-9-]{0,56}[a-z0-9])?$') {
+    throw "distribution.json : cloudflarePagesProject doit être un nom de projet Pages (minuscules, chiffres, tirets), reçu « $name »."
+  }
+  $name
+}
+
 # Identifiant de l'extension Firefox : celui de extension/manifest.firefox.json. L'installation
 # existante se met à jour par cet identifiant, il ne doit jamais changer.
 function Get-FirefoxId {
@@ -131,7 +140,30 @@ function Read-ZipEntries([byte[]] $Bytes) {
   $entries
 }
 
+# --- Outils externes ----------------------------------------------------------------------
+# git, npm, web-ext et wrangler écrivent avertissements et progression sur stderr. Sous
+# PowerShell 5.1, dès que stderr est redirigé (journal, CI, 2>&1), chaque ligne y devient une
+# erreur que $ErrorActionPreference = 'Stop' rend fatale (git commit s'arrêtait ainsi sur
+# « LF will be replaced by CRLF »). Ces fonctions passent en 'Continue' le temps de l'appel et
+# ne jugent l'outil que sur son code de sortie.
+
+# Lance l'outil, sa sortie à l'écran, et renvoie son code de sortie.
+function Invoke-NativeCode([string] $Exe, [string[]] $Arguments) {
+  $null = Get-Command $Exe -CommandType Application -ErrorAction Stop
+  $ErrorActionPreference = 'Continue'
+  & $Exe @Arguments | Out-Host
+  $LASTEXITCODE
+}
+
+# Lance l'outil, sa sortie à l'écran, et s'arrête s'il échoue.
 function Invoke-Native([string] $Exe, [string[]] $Arguments) {
-  & $Exe @Arguments
-  if ($LASTEXITCODE -ne 0) { throw "$Exe $($Arguments[0]) a échoué (code $LASTEXITCODE)." }
+  $code = Invoke-NativeCode $Exe $Arguments
+  if ($code -ne 0) { throw "$Exe $($Arguments[0]) a échoué (code $code)." }
+}
+
+# Lance l'outil et renvoie ses lignes de sortie, stderr écarté ; $LASTEXITCODE dit s'il a réussi.
+function Get-NativeOutput([string] $Exe, [string[]] $Arguments) {
+  $null = Get-Command $Exe -CommandType Application -ErrorAction Stop
+  $ErrorActionPreference = 'Continue'
+  & $Exe @Arguments 2>$null
 }
