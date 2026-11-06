@@ -1,0 +1,19 @@
+{
+  "name": "ronflux",
+  "private": true,
+  "description": "Outils de construction et de publication de Ronflux (voir README.md).",
+  "license": "UNLICENSED",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "lint:firefox": "web-ext lint --self-hosted --warnings-as-errors --source-dir dist/firefox",
+    "check:chrome": "node tools/check-chrome.mjs"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "2.6.2",
+    "playwright": "1.64.1",
+    "web-ext": "10.8.0"
+  }
+}
