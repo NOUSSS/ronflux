@@ -43,7 +43,8 @@ function Get-SecretPath([string] $Name) { Join-Path $env:USERPROFILE ".secrets\$
 
 # Même format que ~/.claude/scripts/secret.ps1 (ConvertFrom-SecureString, DPAPI du compte
 # Windows courant). La valeur ne sort de cette fonction que pour aller dans l'environnement de
-# web-ext.
+# web-ext. Les clés AMO ne contiennent jamais d'espace : celles qu'apporte un copier-coller
+# depuis la page des clés sont retirées (sinon AMO répond « Error decoding signature »).
 function Read-DpapiSecret([string] $Name) {
   $path = Get-SecretPath $Name
   if (-not (Test-Path -LiteralPath $path)) { throw "Clé « $Name » absente ($path) : voir README, section Publication." }
@@ -53,8 +54,10 @@ function Read-DpapiSecret([string] $Name) {
     throw "Clé « $Name » illisible ($path) : chiffrée par un autre compte Windows ou abîmée, la ranger de nouveau."
   }
   $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
-  try { [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr) }
+  try { $value = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr).Trim() }
   finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr) }
+  if (-not $value) { throw "Clé « $Name » vide : la ranger de nouveau." }
+  $value
 }
 
 # Vérifie un .xpi signé : signature AMO présente, et contenu identique, fichier par fichier, à
