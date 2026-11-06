@@ -402,3 +402,8 @@ Mesures faites sur twitch.tv depuis la France, sans compte :
   composant React du lecteur). Une refonte côté Twitch peut le casser : vérifier la console.
 - Twitch propose Turbo et les abonnements aux chaînes comme moyens officiels de ne pas voir de
   pubs ; bloquer les pubs prive les streamers de ce revenu.
+
+## Licence
+
+Ronflux est publié sous licence MIT (voir `LICENSE`). Code source :
+https://github.com/NOUSSS/ronflux.

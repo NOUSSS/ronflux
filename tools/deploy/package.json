@@ -2,7 +2,7 @@
   "name": "ronflux-deploiement",
   "private": true,
   "description": "Outil de déploiement du site sur Cloudflare Pages, installé à part pour ne pas alourdir le build (release.ps1 lance npm ci ici au premier déploiement).",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "devDependencies": {
     "wrangler": "4.151.3"
   }
