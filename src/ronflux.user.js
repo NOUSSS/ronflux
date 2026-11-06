@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Ronflux
 // @namespace    ronflux
-// @version      1.0.2
+// @version      1.1.0
 // @description  Bloque les publicités vidéo (pre-roll et mid-roll) des lives Twitch en basculant sur un flux de secours sans pub.
 // @author       Ronflux
 // @match        *://*.twitch.tv/*
@@ -35,7 +35,7 @@
 (function () {
   'use strict';
 
-  const VERSION = '1.0.2';
+  const VERSION = '1.1.0';
   const TAG = '[Ronflux]';
 
   // ---------------------------------------------------------------------------
@@ -283,9 +283,12 @@
       return null;
     }
 
+    // Prévient la page à chaque changement d'état de la pub en cours : flux de secours trouvé
+    // (message « Pub bloquée ») ou aucun (masque). Un changement de type de secours en cours de
+    // pub ne donne pas de second message.
     function notify(ad, found) {
       if (state.ad !== ad) return;
-      const sig = found ? 'found:' + typeKey(ad.backup.type) : 'none';
+      const sig = found ? 'found' : 'none';
       if (ad.lastNotified === sig) return;
       ad.lastNotified = sig;
       post({
@@ -300,48 +303,59 @@
       });
     }
 
-    // Renvoie le texte d'une playlist sans pub pour la pub en cours, ou null.
-    function getBackupPlaylist(ad, want) {
-      if (ad.pending) return ad.pending;
-      ad.pending = (async () => {
+    async function searchBackup(ad, want) {
+      if (ad.backup) {
         try {
-          if (ad.backup) {
-            try {
-              const r = await realFetch(ad.backup.quality.url);
-              if (r.ok) {
-                const t = await r.text();
-                if (!AD_RE.test(t)) return t;
-                log('le flux de secours contient maintenant une pub, on en cherche un autre');
-              }
-            } catch (e) {
-              log('erreur flux de secours :', e && e.message);
-            }
-            ad.backup = null;
+          const r = await realFetch(ad.backup.quality.url);
+          if (r.ok) {
+            const t = await r.text();
+            if (!AD_RE.test(t)) return t;
+            log('le flux de secours contient maintenant une pub, on en cherche un autre');
           }
-          if (ad.nextSearchAt && Date.now() < ad.nextSearchAt) return null;
-          const text = await findBackup(ad, want);
-          if (text != null) { notify(ad, true); return text; }
-          ad.tried.clear();
-          ad.nextSearchAt = Date.now() + cfg.retryIntervalMs;
-          warn('aucun flux de secours sans pub trouvé, nouvel essai dans', Math.round(cfg.retryIntervalMs / 1000), 's');
-          notify(ad, false);
-          return null;
-        } finally {
-          ad.pending = null;
+        } catch (e) {
+          log('erreur flux de secours :', e && e.message);
         }
-      })();
+        ad.backup = null;
+      }
+      if (ad.nextSearchAt && Date.now() < ad.nextSearchAt) return null;
+      const text = await findBackup(ad, want);
+      if (text != null) { notify(ad, true); return text; }
+      ad.tried.clear();
+      ad.nextSearchAt = Date.now() + cfg.retryIntervalMs;
+      warn('aucun flux de secours sans pub trouvé, nouvel essai dans', Math.round(cfg.retryIntervalMs / 1000), 's');
+      notify(ad, false);
+      return null;
+    }
+
+    // Renvoie le texte d'une playlist sans pub pour la pub en cours, ou null. Les demandes
+    // simultanées partagent la même recherche (ad.pending).
+    function getBackupPlaylist(ad, want) {
+      if (!ad.pending) {
+        // ad.pending se vide dans .finally(), qui passe toujours après l'affectation ci-dessous.
+        // Un `finally` dans la fonction async s'exécuterait avant elle quand la recherche se
+        // termine sans aucun `await` (nouvel essai pas encore permis) : la promesse déjà
+        // résolue à null resterait alors en cache jusqu'à la fin de la pub, sans plus aucune
+        // recherche.
+        const p = searchBackup(ad, want).finally(() => { if (ad.pending === p) ad.pending = null; });
+        ad.pending = p;
+      }
       return ad.pending;
     }
 
-    function endAd() {
+    // Termine la pub en cours et prévient la page, qui retire le masque et rend le son.
+    // channelChanged : la pub est abandonnée parce que le lecteur est passé sur une autre
+    // chaîne (navigation, raid) ; la page ne recharge pas alors le lecteur, qui démarre déjà.
+    function endAd(channelChanged) {
       const ad = state.ad;
+      if (!ad) return;
       state.ad = null;
       const qualityChanged = !!(
         ad.backup && ad.originalQuality &&
         (ad.backup.quality.height !== ad.originalQuality.height || ad.backup.quality.fps !== ad.originalQuality.fps)
       );
       const durationMs = Date.now() - ad.startedAt;
-      info('fin de la pub après', Math.round(durationMs / 1000), 's');
+      if (channelChanged) info('changement de chaîne pendant la pub de', ad.channel, ': pub abandonnée');
+      else info('fin de la pub après', Math.round(durationMs / 1000), 's');
       post({
         key: 'RONFLUX_AD_STATE',
         active: false,
@@ -349,6 +363,7 @@
         isMidroll: ad.isMidroll,
         usedBackup: !!ad.backup,
         qualityChanged,
+        channelChanged: !!channelChanged,
         durationMs,
       });
     }
@@ -362,7 +377,7 @@
         const m = url.match(/\/channel\/hls\/([^./?]+)\.m3u8/i);
         const channel = m ? decodeURIComponent(m[1]).toLowerCase() : null;
         if (!channel) { warn('playlist maîtresse non reconnue, pubs non bloquables :', url.split('?')[0]); return; }
-        if (state.channel !== channel) state.ad = null;
+        if (state.channel !== channel) endAd(true);
         state.channel = channel;
         state.usherUrl = url;
         state.qualities = parseMaster(text);
@@ -380,7 +395,7 @@
       const wrap = (t) => new Response(t, { status: resp.status, statusText: resp.statusText, headers: resp.headers });
 
       if (!AD_RE.test(text)) {
-        if (state.ad) endAd();
+        endAd(false);
         return wrap(text);
       }
       if (!state.channel || !state.usherUrl) {
@@ -552,6 +567,7 @@
     };
   }
 
+  let wrappedCount = 0; // workers enveloppés depuis le chargement, terminés compris
   const OrigWorker = window.Worker;
   window.Worker = class Worker extends OrigWorker {
     constructor(url, options) {
@@ -571,11 +587,15 @@
       const blobUrl = URL.createObjectURL(new Blob([script], { type: 'text/javascript' }));
       super(blobUrl, options);
       workers.add(this);
-      this.addEventListener('message', onWorkerMessage);
+      wrappedCount++;
+      this.addEventListener('message', (ev) => onWorkerMessage(this, ev));
       info('worker Twitch enveloppé');
     }
     terminate() {
       workers.delete(this);
+      // Un worker terminé pendant une pub n'enverra plus la fin de la pub : on retire nous-mêmes
+      // le masque et la coupure du son qu'il avait demandés.
+      setMasked(this, false);
       return super.terminate();
     }
   };
@@ -614,7 +634,7 @@
     if (!overlayEl) {
       overlayEl = document.createElement('div');
       overlayEl.className = 'ronflux-overlay';
-      overlayEl.innerHTML = '<b>Publicité en cours</b><span>Aucun flux de secours disponible : le lecteur est masqué et le son coupé jusqu’à la reprise du live.</span>';
+      overlayEl.innerHTML = '<b>Pub masquée</b><span>Le live et le son reviennent à la fin de la pub.</span>';
     }
     if (overlayEl.parentElement !== c) c.appendChild(overlayEl);
     const video = document.querySelector('video');
@@ -629,9 +649,18 @@
     }
   }
 
+  // Workers dont la pub en cours n'a pas de flux de secours : le masque reste tant qu'il y en a un.
+  const maskingWorkers = new Set();
+  function setMasked(worker, masked) {
+    if (masked) maskingWorkers.add(worker);
+    else maskingWorkers.delete(worker);
+    if (maskingWorkers.size > 0 && CONFIG.hidePlayerOnUnblockedAd) showOverlay();
+    else hideOverlay();
+  }
+
   let toastEl = null;
   let toastTimer = 0;
-  function toast(text) {
+  function toast(text, durationMs) {
     if (!CONFIG.showNotifications) return;
     ensureStyle();
     const c = getPlayerContainer();
@@ -639,9 +668,14 @@
     if (!toastEl) { toastEl = document.createElement('div'); toastEl.className = 'ronflux-toast'; }
     toastEl.textContent = text;
     if (toastEl.parentElement !== c) c.appendChild(toastEl);
-    requestAnimationFrame(() => toastEl.classList.add('ronflux-show'));
+    // Pas de requestAnimationFrame ici : le navigateur le suspend dans un onglet caché ou une
+    // fenêtre recouverte, mais pas les minuteurs. Le masquage passait alors avant l'affichage et
+    // le message restait à l'écran au retour sur l'onglet. Lire offsetWidth applique l'opacité 0
+    // de départ, pour que la transition d'apparition joue quand même.
+    void toastEl.offsetWidth;
+    toastEl.classList.add('ronflux-show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toastEl && toastEl.classList.remove('ronflux-show'), 4000);
+    toastTimer = setTimeout(() => { if (toastEl) toastEl.classList.remove('ronflux-show'); }, durationMs || 4000);
   }
 
   function findReactRoot() {
@@ -697,21 +731,15 @@
     reloadPlayer();
   }
 
-  function onWorkerMessage(ev) {
+  // Le détail (type de pub, flux de secours, qualité) est dans la console du worker ; le lecteur
+  // n'affiche qu'un message court.
+  function onWorkerMessage(worker, ev) {
     const d = ev.data;
-    if (!d || typeof d.key !== 'string' || !d.key.startsWith('RONFLUX_')) return;
-    if (d.key !== 'RONFLUX_AD_STATE') return;
-    if (d.active) {
-      if (d.backupFound) {
-        hideOverlay();
-        toast('Pub ' + (d.isMidroll ? 'mid-roll' : 'pre-roll') + ' bloquée · flux ' + d.backupType.playerType + ' (' + d.backupQuality + ')');
-      } else if (CONFIG.hidePlayerOnUnblockedAd) {
-        showOverlay();
-      }
-    } else {
-      hideOverlay();
-      maybeReloadAfterAd(d);
-    }
+    if (!d || d.key !== 'RONFLUX_AD_STATE') return;
+    if (d.active && !d.backupFound) { setMasked(worker, true); return; }
+    setMasked(worker, false);
+    if (d.active) toast('Pub bloquée');
+    else if (!d.channelChanged) maybeReloadAfterAd(d);
   }
 
   // --- Détection d'une injection trop tardive ----------------------------------
@@ -721,13 +749,14 @@
   (function watchLateInjection() {
     let checks = 0;
     const timer = setInterval(() => {
-      if (workers.size > 0 || ++checks > 24) { clearInterval(timer); return; }
+      if (wrappedCount > 0 || ++checks > 24) { clearInterval(timer); return; }
       const video = document.querySelector('video');
       if (!video || video.readyState === 0) return;
       clearInterval(timer);
       warn('le lecteur tourne mais aucun worker n’a été enveloppé : le script a été chargé trop tard. ' +
-        'Tampermonkey → Paramètres → Mode d’injection « Instantané », ou utiliser l’extension Firefox (voir README).');
-      toast('Ronflux : script chargé trop tard, aucune pub ne sera bloquée (voir la console)');
+        'Avec Tampermonkey, choisir le mode d’injection « Instantané » (Paramètres), ou installer ' +
+        'l’extension Ronflux à la place du userscript (voir le README).');
+      toast('Ronflux s’est lancé trop tard. Rechargez la page pour bloquer les pubs.', 8000);
     }, 5000);
   })();
 

@@ -1,16 +1,19 @@
 # Ronflux
 
-Bloque les publicités vidéo (pre-roll et mid-roll) des lives Twitch. Disponible en deux formats
-qui partagent exactement le même code :
+Bloque les publicités vidéo (pre-roll et mid-roll) des lives Twitch. Disponible en trois formats
+qui partagent exactement le même code, téléchargeables sur le site (`https://ronflux.pages.dev`
+pour l'instant, adresse réglée dans `distribution.json`) :
 
-| Fichier | Format |
-|---|---|
-| `src/ronflux.user.js` | Userscript pour Tampermonkey / Violentmonkey (Firefox, Chrome, Edge…), et source unique du projet |
-| `extension/` → `dist/ronflux-firefox.xpi` | Extension Firefox (Manifest V3, Firefox 128+), construite par `build.ps1` |
+| Paquet | Pour | Mises à jour |
+|---|---|---|
+| `ronflux-firefox.xpi` | Firefox 140+ et dérivés (Zen, LibreWolf…), signé par Mozilla | automatiques (`updates.json` du site) |
+| `ronflux-chrome.zip` | Chrome 111+, Brave, Edge, Opera : Chrome Web Store ou mode développeur | automatiques par le store, à la main en mode développeur |
+| `ronflux.user.js` | Tampermonkey / Violentmonkey | automatiques (`@updateURL`) |
 
-`dist/` est généré par `build.ps1` et ignoré par git.
+La source unique est `src/ronflux.user.js` : `build.ps1` en tire les trois paquets dans `dist/`
+(ignoré par git).
 
-N'installez **qu'un seul** des deux : si les deux sont présents, le second se désactive tout seul.
+N'installez **qu'un seul** des trois : si plusieurs sont présents, un seul reste actif.
 
 ## Comment ça marche
 
@@ -38,59 +41,249 @@ domaine classique. Le script agit donc au niveau du lecteur :
 4. Si aucun flux de secours sans pub n'est trouvé, le lecteur est masqué et le son coupé le temps
    de la pub, et une nouvelle recherche est lancée toutes les 10 s (configurable).
 
-L'extension Firefox bloque en plus, sur les pages Twitch uniquement, quelques domaines de
+Les extensions bloquent en plus, sur les pages Twitch uniquement, quelques domaines de
 bannières et de mesure publicitaire (`rules.json`).
 
 ## Installation
 
+Les liens ci-dessous partent du site, `https://ronflux.pages.dev` pour l'instant.
+
+### Firefox (et Zen, LibreWolf, Floorp…)
+
+1. Ouvrir `https://ronflux.pages.dev/telecharger/ronflux-firefox.xpi` (le lien Firefox du site).
+2. Firefox indique qu'il a bloqué l'installation depuis ce site : « Continuer vers
+   l'installation », puis « Ajouter ».
+3. Recharger les onglets Twitch.
+
+Le paquet est signé par Mozilla sur le canal non répertorié d'addons.mozilla.org (signé, sans
+fiche publique) : il s'installe sur Firefox stable sans rien changer dans `about:config`. Firefox
+consulte chaque jour `https://ronflux.pages.dev/updates.json` et installe seul les nouvelles
+versions (`about:addons` → roue dentée → « Rechercher des mises à jour » pour ne pas attendre).
+
+Firefox 140 ou plus récent (142 sur Android).
+
+### Chrome, Brave, Edge, Opera
+
+**Chrome Web Store**, dès que la fiche est acceptée : ouvrir le lien de la fiche depuis le site,
+puis « Ajouter à Chrome ». La fiche est non répertoriée : la recherche du store ne la montre pas,
+seul ce lien y mène. Les mises à jour arrivent toutes seules. Brave l'installe directement, Edge
+demande d'autoriser les extensions d'autres boutiques, Opera passe par son module « Install Chrome
+Extensions ».
+
+**Mode développeur**, en attendant la fiche ou sans le store :
+
+1. Télécharger `ronflux-chrome.zip` et le décompresser dans un dossier qui restera en place : le
+   navigateur recharge l'extension depuis ce dossier à chaque démarrage.
+2. Ouvrir `chrome://extensions` (`brave://extensions`, `edge://extensions`,
+   `opera://extensions`) et activer le « Mode développeur ».
+3. « Charger l'extension non empaquetée » → choisir le dossier (celui qui contient
+   `manifest.json`).
+4. Recharger les onglets Twitch.
+
+Pas de mise à jour automatique dans ce mode : pour une nouvelle version, remplacer le contenu du
+dossier par celui du nouveau ZIP, puis cliquer sur « Actualiser » (flèche circulaire) sur la carte
+de Ronflux. Chrome peut rappeler au démarrage que des extensions en mode développeur sont
+actives.
+
+Chrome 111 ou plus récent (nécessaire pour `world: "MAIN"`).
+
 ### Userscript (Tampermonkey / Violentmonkey)
 
 1. Installer [Tampermonkey](https://www.tampermonkey.net/) ou [Violentmonkey](https://violentmonkey.github.io/).
-2. Ouvrir le tableau de bord de l'extension → « + » (nouveau script) → coller le contenu de
-   `src/ronflux.user.js` → enregistrer. Ou bien ouvrir le fichier `.user.js` dans le
-   navigateur : l'extension propose l'installation.
+2. Ouvrir `https://ronflux.pages.dev/telecharger/ronflux.user.js` : l'extension propose
+   l'installation.
 3. Recharger Twitch.
 
-Greasemonkey n'est pas pris en charge (il isole le script de la page, ce qui empêche
-d'envelopper le worker).
+Le gestionnaire consulte régulièrement cette même adresse (`@updateURL`) et met le script à jour.
+Greasemonkey n'est pas pris en charge (il isole le script de la page, ce qui empêche d'envelopper
+le worker). Pour Tampermonkey, voir aussi le mode d'injection dans Diagnostic.
 
-### Zen Browser (installation permanente, sans signature)
+### Développement
 
-Zen est basé sur Firefox mais, contrairement à Firefox stable, il n'impose pas la signature des
-extensions (sa build est compilée avec `MOZ_REQUIRE_SIGNING=false`). Il suffit d'autoriser les
-extensions non signées une fois :
+- **Firefox, chargement temporaire** : `about:debugging#/runtime/this-firefox` → « Charger un
+  module complémentaire temporaire… » → `dist/firefox/manifest.json`. Disparaît à la fermeture de
+  Firefox.
+- **Chrome** : « Charger l'extension non empaquetée » sur `dist/chrome/`, puis « Actualiser »
+  après chaque build.
+- **Zen, build locale permanente** : Zen n'impose pas la signature (sa build est compilée avec
+  `MOZ_REQUIRE_SIGNING=false`). Passer une fois `xpinstall.signatures.required` à `false` dans
+  `about:config`, puis à chaque modification :
 
-1. Ouvrir `about:config`, chercher `xpinstall.signatures.required` et le passer à `false`.
-2. Ouvrir `dist/ronflux-firefox.xpi` (après `build.ps1`) dans Zen (glisser le fichier dans la fenêtre, ou
-   `about:addons` → roue dentée → « Installer un module depuis un fichier… »).
-3. Confirmer « Ajouter ». L'extension reste installée après redémarrage.
+  ```powershell
+  powershell -ExecutionPolicy Bypass -File .\install.ps1
+  ```
 
-Mises à jour suivantes en une commande (rebuild, fermeture de Zen, copie du `.xpi` dans le profil,
-relance, vérification de la version) :
+  Le script reconstruit, ferme Zen proprement, copie `dist/ronflux-firefox.xpi` dans le profil,
+  relance Zen réduit, sans lui donner le focus, et vérifie la version installée. Options :
+  `-DryRun` (affiche sans rien modifier), `-NoRelaunch`, `-Browser firefox` (profil Firefox, qui
+  doit lui aussi avoir `xpinstall.signatures.required=false`). La build locale porte l'identifiant
+  de la version publiée : une version signée plus récente, publiée sur le site, la remplace par
+  mise à jour automatique.
+
+## Construction
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\install.ps1
+npm ci                                                  # une fois, Node.js 20+
+powershell -ExecutionPolicy Bypass -File .\build.ps1
 ```
 
-Options : `-DryRun` (affiche sans rien modifier), `-NoRelaunch`, `-Browser firefox` (profil
-Firefox, qui doit lui aussi avoir `xpinstall.signatures.required=false`).
+`build.ps1` lit `src/ronflux.user.js` et `extension/`, et écrit dans `dist/` :
 
-### Extension Firefox
+| Sortie | Contenu |
+|---|---|
+| `dist/firefox/`, `dist/ronflux-firefox.xpi` | extension Firefox non signée, manifeste avec `update_url` |
+| `dist/chrome/`, `dist/ronflux-chrome.zip` | extension Chrome, icônes PNG de 16 à 128 px |
+| `dist/ronflux.user.js` | userscript avec `@updateURL` et `@downloadURL` |
 
-Chargement temporaire (disparaît à la fermeture de Firefox, idéal pour tester) :
+- **Manifestes** : `extension/manifest.base.json` (commun), complété par `manifest.firefox.json`
+  ou `manifest.chrome.json` ; `tools/manifest.mjs` les fusionne.
+- **Logo** : `extension/icon.svg` est le seul fichier source. Firefox l'utilise tel quel et le
+  build en tire les PNG de Chrome (`tools/icons.mjs`). Pour changer de logo, remplacer ce fichier
+  par un SVG carré.
+- **Adresses** : seule l'adresse de base du site se règle, `siteUrl` dans `distribution.json`.
+  Les chemins sont fixes (`tools/common.ps1`) et partagés avec le site :
+  `/telecharger/ronflux-firefox.xpi`, `/telecharger/ronflux-chrome.zip`,
+  `/telecharger/ronflux.user.js` et `/updates.json`.
+- **Version** : elle figure dans `extension/manifest.base.json`, dans l'en-tête `@version` et
+  dans la constante `VERSION` du userscript. Le build s'arrête si elles diffèrent ;
+  `release.ps1` les monte ensemble.
+- Le build est reproductible : mêmes sources, mêmes archives, octet pour octet.
 
-1. Ouvrir `about:debugging#/runtime/this-firefox`.
-2. « Charger un module complémentaire temporaire… » → choisir `dist/firefox/manifest.json`
-   (ou `dist/ronflux-firefox.xpi`).
+Vérifications :
 
-Installation permanente : Firefox exige des extensions signées. Deux options :
+```powershell
+npm run lint:firefox                           # web-ext lint, en mode auto-hébergé
+npx playwright install --no-shell chromium     # une fois
+npm run check:chrome                           # dist/chrome dans un Chromium headless sur un live Twitch
+```
 
-- **Firefox Developer Edition, Nightly ou ESR** : dans `about:config`, passer
-  `xpinstall.signatures.required` à `false`, puis ouvrir `about:addons` → roue dentée →
-  « Installer un module depuis un fichier… » → `dist/ronflux-firefox.xpi`.
-- **Firefox stable** : signer le paquet avec [web-ext](https://extensionworkshop.com/documentation/develop/web-ext-command-reference/#web-ext-sign)
-  et des identifiants API addons.mozilla.org (`web-ext sign --channel unlisted`), puis installer
-  le `.xpi` signé.
+## Publication
+
+### Une fois : comptes et clés
+
+**addons.mozilla.org (Firefox)**
+
+1. Se connecter sur https://addons.mozilla.org avec un compte Mozilla, ouvrir le Developer Hub
+   et accepter l'accord de distribution des développeurs (sans lui, l'API refuse les envois).
+2. « Gérer les clés API » (https://addons.mozilla.org/developers/addon/api/key/) → générer des
+   identifiants. AMO affiche un « émetteur JWT » (`user:…`) et un « secret JWT ».
+3. Les ranger chiffrés par DPAPI (lisibles seulement par ce compte Windows, sur ce PC). La saisie
+   ne s'affiche pas :
+
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File $HOME\.claude\scripts\secret.ps1 set amo-jwt-issuer
+   powershell -ExecutionPolicy Bypass -File $HOME\.claude\scripts\secret.ps1 set amo-jwt-secret
+   ```
+
+   Sans `secret.ps1`, ces commandes donnent les mêmes fichiers :
+
+   ```powershell
+   New-Item -ItemType Directory -Force $HOME\.secrets | Out-Null
+   Read-Host -AsSecureString 'Émetteur JWT' | ConvertFrom-SecureString | Set-Content -Encoding ascii $HOME\.secrets\amo-jwt-issuer.dpapi
+   Read-Host -AsSecureString 'Secret JWT' | ConvertFrom-SecureString | Set-Content -Encoding ascii $HOME\.secrets\amo-jwt-secret.dpapi
+   ```
+
+   Les clés ne vont jamais dans le dépôt, dans un fichier `.env` ni sur une ligne de commande.
+   Pour en changer, en régénérer sur AMO (les anciennes sont révoquées) et relancer ces
+   commandes.
+
+Le premier `release.ps1` crée l'extension sur le compte AMO avec l'identifiant
+`{adf926d0-3333-45f4-b9d2-b54afdb0fc13}`, celui des installations existantes. Ne jamais le
+changer : elles ne recevraient plus les mises à jour.
+
+**Cloudflare Pages (site)**
+
+1. Créer le projet Pages qui sert le site. Son nom est celui de `cloudflarePagesProject` dans
+   `distribution.json` (`ronflux`) et donne l'adresse `ronflux.pages.dev`, déjà écrite dans les
+   paquets :
+
+   ```powershell
+   cd tools\deploy
+   npm ci
+   npx wrangler login
+   npx wrangler pages project create ronflux --production-branch main
+   cd ..\..
+   ```
+
+   `wrangler login` ouvre le navigateur pour autoriser wrangler sur le compte Cloudflare.
+   wrangler est installé à part, dans `tools/deploy`, pour que `npm ci` à la racine reste léger.
+2. Créer un jeton d'API Cloudflare avec les autorisations `Cloudflare Pages : Edit` et
+   `Account Settings : Read` (wrangler s'en sert pour trouver le compte), puis le ranger :
+
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File $HOME\.claude\scripts\secret.ps1 set cloudflare-pages
+   ```
+
+   Sans `cloudflare-pages`, `release.ps1` prend `cloudflare-write`, le jeton général du compte,
+   s'il est rangé.
+
+**Chrome Web Store**
+
+1. Créer un compte développeur sur https://chrome.google.com/webstore/devconsole (frais
+   d'inscription uniques).
+2. « Nouvel article » → envoyer `ronflux-chrome.zip`, puis remplir la fiche, les pratiques de
+   confidentialité et la distribution d'après [docs/chrome-web-store.md](docs/chrome-web-store.md)
+   (visibilité « non répertoriée »).
+3. Une fois l'article accepté, mettre le lien de sa fiche dans la configuration du site
+   (`chromeWebStoreUrl`) : le bouton Chrome du site y mène alors directement.
+
+### À chaque version
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\release.ps1 -DryRun   # ce qui sera fait, sans rien modifier
+powershell -ExecutionPolicy Bypass -File .\release.ps1           # 1.0.2 → 1.0.3 ; -Bump minor|major ou -Version x.y.z
+```
+
+`release.ps1` :
+
+1. monte la version aux trois endroits où elle figure ;
+2. lance `build.ps1` ;
+3. envoie la version Firefox à AMO sur le canal « unlisted » (`web-ext sign`) et récupère le
+   `.xpi` signé, après avoir vérifié qu'il contient exactement les fichiers construits. La
+   validation automatique d'AMO prend en général quelques minutes ;
+4. prépare `dist/publication/`, avec l'arborescence du site :
+
+   | Fichier | Adresse |
+   |---|---|
+   | `updates.json` | `/updates.json` : manifeste de mise à jour Firefox (version, lien et empreinte SHA-256 du `.xpi`) |
+   | `telecharger/ronflux-firefox.xpi` | `/telecharger/ronflux-firefox.xpi` (signé) |
+   | `telecharger/ronflux-chrome.zip` | `/telecharger/ronflux-chrome.zip` |
+   | `telecharger/ronflux.user.js` | `/telecharger/ronflux.user.js` |
+
+5. commite la montée de version, et seulement elle (les autres modifications de l'arbre de
+   travail restent en l'état), puis pose l'étiquette `vx.y.z` ;
+6. construit le site (`npm run build` dans `site/`), y ajoute `dist/publication/` et déploie le
+   tout sur Cloudflare Pages (`wrangler pages deploy`, branche de production `main`).
+   `updates.json` et le `.xpi` partent ainsi ensemble, car le premier contient l'empreinte du
+   second. Le script s'arrête si le site ne sert pas le `.xpi` en `application/x-xpinstall`
+   (fichier `_headers`) : Firefox le téléchargerait au lieu de proposer l'installation.
+
+Les clés et le jeton ne sont déchiffrés qu'au moment de s'en servir et passés à web-ext ou à
+wrangler par l'environnement de leur seul processus, jamais en argument ni à l'écran. Les autres
+variables `WEB_EXT_*`, `CLOUDFLARE_*`, `CF_*` et `WRANGLER_*` sont écartées le temps de l'appel.
+
+Options : `-NoCommit` saute le commit et l'étiquette ; `-NoDeploy` saute le déploiement, et
+`dist/publication/` est alors à déposer à la racine du site. Sans dossier `site/`, le déploiement
+est sauté.
+
+Seule l'étape du Chrome Web Store reste à la main : onglet « Paquet » → « Importer un nouveau
+paquet » → `dist/publication/telecharger/ronflux-chrome.zip` → « Envoyer pour examen ».
+
+**Reprise** :
+
+- arrêt après la montée de version, avant l'envoi à AMO : relancer avec `-Version x.y.z` (la
+  même) ;
+- arrêt après la signature (déploiement en échec, par exemple) : le script affiche la commande
+  de reprise, `release.ps1 -SignedXpi <fichier>`, qui termine sans renvoyer la version à AMO (il
+  refuse deux envois du même numéro). Un commit ou une étiquette déjà posés ne sont pas refaits ;
+- AMO a reçu la version mais l'attente de la signature a expiré : télécharger le `.xpi` signé
+  depuis la page de la version sur le Developer Hub, puis `release.ps1 -SignedXpi <fichier>`.
+
+**Changer l'adresse du site** : modifier `siteUrl` dans `distribution.json` (et
+`cloudflarePagesProject` si le site passe sur un autre projet Pages). Les installations
+existantes (Firefox par `updates.json`, userscript par `@updateURL`) interrogent l'ancienne
+adresse jusqu'à ce qu'elles reçoivent une version construite avec la nouvelle : garder
+l'ancienne adresse en service le temps d'une version au moins.
 
 ## Configuration
 
@@ -111,8 +304,8 @@ Twitch change régulièrement quels types de lecteur reçoivent des pubs. Si les
 c'est en général `backupPlayerTypes` qu'il faut réordonner ou compléter : la console indique
 quel type a fonctionné, et le dernier type qui a marché sur une chaîne est réessayé en premier.
 
-Après modification du userscript, lancer `build.ps1` pour regénérer `dist/firefox/` et
-`dist/ronflux-firefox.xpi` :
+Après modification du userscript, lancer `build.ps1` pour regénérer les paquets de `dist/`
+(voir Construction) :
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\build.ps1
@@ -146,7 +339,7 @@ Si « worker Twitch enveloppé » n'apparaît jamais (`__ronflux.workerCount` re
 script s'est exécuté trop tard : Twitch crée le worker du lecteur dans la première seconde du
 chargement de la page. Dans Tampermonkey, mettre le « Mode d'injection » sur « Instantané »
 (Paramètres → Général, mode de configuration « Avancé ») ; dans Violentmonkey, laisser
-`@run-at document-start`. L'extension Firefox n'a pas ce problème.
+`@run-at document-start`. Les extensions Firefox et Chrome n'ont pas ce problème.
 
 Si « pub détectée mais aucune playlist maîtresse connue » ou « playlist maîtresse non reconnue »
 s'affiche, Twitch a changé le format de l'URL usher : adapter `isMasterPlaylistUrl` / `onMaster`

@@ -5,10 +5,14 @@
 #   powershell -ExecutionPolicy Bypass -File .\install.ps1 -Browser firefox
 #   powershell -ExecutionPolicy Bypass -File .\install.ps1 -DryRun    # montre ce qui serait fait
 #
-# Étapes : build.ps1 → fermeture propre du navigateur → copie du .xpi dans
-# <profil>\extensions\{id}.xpi (le navigateur voit le fichier modifié au démarrage et met
-# l'extension à jour, elle reste activée) → relance du navigateur → vérification de la version.
-# Les onglets reviennent grâce à la restauration de session.
+# Étapes : build.ps1 → fermeture propre du navigateur → copie de dist\ronflux-firefox.xpi (non
+# signé) dans <profil>\extensions\{id}.xpi (le navigateur voit le fichier modifié au démarrage et
+# met l'extension à jour, elle reste activée) → relance du navigateur en arrière-plan, réduit et
+# sans prendre le focus → vérification de la version. Les onglets reviennent grâce à la
+# restauration de session.
+#
+# Pour développer seulement : la version signée publiée sur le site s'installe et se met à jour
+# toute seule (voir README).
 
 param(
   [ValidateSet('zen', 'firefox')] [string] $Browser = 'zen',
@@ -18,8 +22,9 @@ param(
 
 $ErrorActionPreference = 'Stop'
 Set-Location $PSScriptRoot
+. .\tools\common.ps1
 
-$ExtensionId = '{adf926d0-3333-45f4-b9d2-b54afdb0fc13}'
+$ExtensionId = Get-FirefoxId
 
 switch ($Browser) {
   'zen'     { $appData = Join-Path $env:APPDATA 'zen';             $exeNames = @('zen');     $exePaths = @("$env:ProgramFiles\Zen Browser\zen.exe", "$env:LOCALAPPDATA\Programs\Zen Browser\zen.exe") }
@@ -56,9 +61,12 @@ if (-not $exe) {
 Write-Host "Navigateur  : $exe"
 
 # --- 3. Build.
-if ($DryRun) { Write-Host '[DryRun] build.ps1' } else { & powershell -ExecutionPolicy Bypass -File .\build.ps1 }
+if ($DryRun) { Write-Host '[DryRun] build.ps1' } else {
+  & powershell -ExecutionPolicy Bypass -File .\build.ps1
+  if ($LASTEXITCODE -ne 0) { throw "build.ps1 a échoué (code $LASTEXITCODE) : rien n'a été installé." }
+}
 $xpi = Join-Path $PSScriptRoot 'dist\ronflux-firefox.xpi'
-$version = (Get-Content -Raw .\extension\manifest.json | ConvertFrom-Json).version
+$version = Get-ProjectVersion
 $target = Join-Path $profile "extensions\$ExtensionId.xpi"
 Write-Host "Version     : $version"
 Write-Host "Destination : $target"
@@ -90,7 +98,9 @@ Write-Host "xpi copié ($((Get-Item $target).Length) octets)."
 if ($NoRelaunch -or -not $exe) { Write-Host 'Relancer le navigateur pour terminer la mise à jour.'; exit 0 }
 
 # --- 6. Relance + vérification de la version enregistrée par le navigateur.
-Start-Process $exe
+# Style 7 : fenêtre réduite, la fenêtre active le reste (l'utilisateur peut être dans un jeu en
+# plein écran). Pas de Start-Process, qui met le navigateur au premier plan.
+$null = (New-Object -ComObject WScript.Shell).Run("`"$exe`"", 7, $false)
 Write-Host "Relance de $Browser, vérification…"
 $deadline = (Get-Date).AddSeconds(40)
 $ok = $false
