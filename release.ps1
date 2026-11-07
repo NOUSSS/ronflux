@@ -11,14 +11,17 @@
 #        telecharger/ronflux.user.js       userscript
 #   5. commite la montée de version et pose l'étiquette vX.Y.Z (sauf -NoCommit) ;
 #   6. construit le site (site/), y ajoute dist/publication/ et le déploie sur Cloudflare Pages
-#      (wrangler pages deploy), sauf -NoDeploy ou si site/ n'existe pas.
-# Seul l'envoi du ZIP au Chrome Web Store reste à faire à la main.
+#      (wrangler pages deploy), sauf -NoDeploy ou si site/ n'existe pas ;
+#   7. envoie le paquet Chrome au Chrome Web Store et le soumet à l'examen
+#      (tools/chrome-web-store.mjs), sauf -NoChromeWebStore. Google le publie dès qu'il
+#      l'accepte, en général sous quelques jours.
 #
 # Secrets chiffrés par DPAPI dans %USERPROFILE%\.secrets (README, section Publication) :
 # amo-jwt-issuer et amo-jwt-secret (clés API AMO), cloudflare-pages ou, à défaut,
-# cloudflare-write (jeton Cloudflare). Ils ne sont déchiffrés qu'au moment de s'en servir et
-# passés à web-ext ou wrangler par l'environnement de ce seul processus, jamais en argument :
-# ils ne sont ni affichés, ni journalisés, ni écrits ailleurs.
+# cloudflare-write (jeton Cloudflare), chrome-web-store (compte de service Google). Ils ne sont
+# déchiffrés qu'au moment de s'en servir et passés à web-ext, wrangler ou
+# tools/chrome-web-store.mjs par l'environnement de ce seul processus, jamais en argument : ils
+# ne sont ni affichés, ni journalisés, ni écrits ailleurs.
 #
 #   powershell -ExecutionPolicy Bypass -File .\release.ps1 -DryRun       # montre tout, ne modifie rien
 #   powershell -ExecutionPolicy Bypass -File .\release.ps1               # 1.0.2 → 1.0.3
@@ -34,6 +37,7 @@ param(
   [string] $SignedXpi,
   [switch] $NoCommit,
   [switch] $NoDeploy,
+  [switch] $NoChromeWebStore,
   [switch] $DryRun
 )
 
@@ -50,53 +54,11 @@ $AmoApi = 'https://addons.mozilla.org/api/v5/'
 # à l'adresse principale du site.
 $PagesBranch = 'main'
 
-function Get-SecretPath([string] $Name) { Join-Path $env:USERPROFILE ".secrets\$Name.dpapi" }
-
-# Même format que ~/.claude/scripts/secret.ps1 (ConvertFrom-SecureString, DPAPI du compte
-# Windows courant). La valeur ne sort de cette fonction que pour aller dans l'environnement de
-# web-ext ou de wrangler. Ces secrets ne contiennent jamais d'espace : celles qu'apporte un
-# copier-coller sont retirées (sinon AMO répond « Error decoding signature »).
-function Read-DpapiSecret([string] $Name) {
-  $path = Get-SecretPath $Name
-  if (-not (Test-Path -LiteralPath $path)) { throw "Clé « $Name » absente ($path) : voir README, section Publication." }
-  try {
-    $secure = (Get-Content -Raw -LiteralPath $path).Trim() | ConvertTo-SecureString
-  } catch {
-    throw "Clé « $Name » illisible ($path) : chiffrée par un autre compte Windows ou abîmée, la ranger de nouveau."
-  }
-  $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
-  try { $value = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr).Trim() }
-  finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr) }
-  if (-not $value) { throw "Clé « $Name » vide : la ranger de nouveau." }
-  $value
-}
-
 # Nom du secret Cloudflare à utiliser : un jeton dédié à Pages s'il est rangé, sinon le jeton
 # général du compte.
 function Get-CloudflareSecretName {
   foreach ($name in $CloudflareSecretNames) { if (Test-Path -LiteralPath (Get-SecretPath $name)) { return $name } }
   $null
-}
-
-# Environnement d'un outil qui reçoit un secret : les variables qui commencent par l'un des
-# préfixes sont écartées (une valeur laissée par un autre projet pourrait détourner l'envoi),
-# puis $Values est posé. Exit-ToolEnv remet tout en l'état, sans jamais afficher de valeur.
-function Enter-ToolEnv([string[]] $ClearPrefixes, [hashtable] $Values) {
-  $saved = @{}
-  foreach ($item in @(Get-ChildItem Env:)) {
-    foreach ($prefix in $ClearPrefixes) {
-      if ($item.Name.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase)) { $saved[$item.Name] = $item.Value; break }
-    }
-  }
-  $state = @{ Saved = $saved; Set = @($Values.Keys) }
-  foreach ($name in $saved.Keys) { Remove-Item -LiteralPath "Env:\$name" }
-  foreach ($name in $Values.Keys) { Set-Item -LiteralPath "Env:\$name" -Value $Values[$name] }
-  $state
-}
-
-function Exit-ToolEnv($State) {
-  foreach ($name in $State.Set) { Remove-Item -LiteralPath "Env:\$name" -ErrorAction SilentlyContinue }
-  foreach ($name in $State.Saved.Keys) { Set-Item -LiteralPath "Env:\$name" -Value $State.Saved[$name] }
 }
 
 # Un JSON sous une forme comparable : mêmes valeurs, même ordre des clés, mêmes octets.
@@ -185,6 +147,9 @@ $deploy = -not $NoDeploy
 $siteMissing = -not (Test-Path (Join-Path $siteDir 'package.json'))
 if ($deploy -and $siteMissing) { Write-Warning 'site/ absent : déploiement sauté, dist/publication/ sera à déposer à la main.'; $deploy = $false }
 $cloudflareSecret = Get-CloudflareSecretName
+$cws = -not $NoChromeWebStore
+$cwsItem = if ($cws) { Get-ChromeWebStoreItem } else { $null }
+$cwsKey = Test-Path -LiteralPath (Get-SecretPath $ChromeWebStoreSecret)
 
 $signedBytes = $null
 if ($SignedXpi) {
@@ -235,6 +200,12 @@ if ($DryRun) {
   } else {
     Write-Host '6. Site    : déploiement sauté'
   }
+  if ($cws) {
+    $state = if ($cwsKey) { "clé $ChromeWebStoreSecret présente" } else { "ABSENTE ($ChromeWebStoreSecret) : voir README, Publication" }
+    Write-Host "7. Chrome Web Store : envoi de $($PublicPaths.chrome.TrimStart('/')) à la fiche $cwsItem, puis soumission à l'examen ($state)"
+  } else {
+    Write-Host '7. Chrome Web Store : sauté'
+  }
   exit 0
 }
 
@@ -246,9 +217,13 @@ if (-not $SignedXpi) {
 if ($deploy -and -not $cloudflareSecret) {
   throw "Jeton Cloudflare absent ($($CloudflareSecretNames -join ' ou ')) : voir README, section Publication, ou relancer avec -NoDeploy. Rien n'a été modifié."
 }
+if ($cws -and -not $cwsKey) {
+  throw "Clé « $ChromeWebStoreSecret » absente ($(Get-SecretPath $ChromeWebStoreSecret)) : voir README, section Publication, ou relancer avec -NoChromeWebStore. Rien n'a été modifié."
+}
 
 $bumped = $false
 $resume = $null
+$resumeNote = 'Arrêt après la signature'
 try {
   # --- 1. Version ---------------------------------------------------------------------------
   if ($target -ne $current) {
@@ -382,15 +357,29 @@ try {
     Write-Host "   en ligne : $($urls.site)"
   }
 
+  # --- 7. Chrome Web Store --------------------------------------------------------------------
+  # En dernier : un refus du store ne retarde ni Firefox ni le site. La reprise ne renvoie pas
+  # une version que le store a déjà, publiée ou en examen.
+  if ($cws) {
+    $resume = "powershell -ExecutionPolicy Bypass -File .\tools\chrome-web-store.ps1 -Upload `"$(Get-PubPath 'chrome')`" -Version $target"
+    $resumeNote = "Arrêt à l'étape 7 (Chrome Web Store), les précédentes sont faites"
+    Write-Host "7. Chrome Web Store (fiche $cwsItem)…"
+    Send-ChromeWebStorePackage (Get-PubPath 'chrome') $target
+  }
+
   Write-Host ''
   Write-Host "OK : Ronflux $target publié."
-  Write-Host 'Reste à faire :'
-  if (-not $deploy) { Write-Host "  - déposer le contenu de dist/publication/ à la racine du site ($($urls.site)) ;" }
-  if (-not $commit) { Write-Host "  - committer la version : git commit -m `"Ronflux $target`" -- $($versionPaths -join ' ') puis git tag -a v$target ;" }
-  Write-Host '  - Chrome Web Store : envoyer dist/publication/telecharger/ronflux-chrome.zip comme nouvelle version (docs/chrome-web-store.md).'
+  $todo = @()
+  if (-not $deploy) { $todo += "déposer le contenu de dist/publication/ à la racine du site ($($urls.site)) ;" }
+  if (-not $commit) { $todo += "committer la version : git commit -m `"Ronflux $target`" -- $($versionPaths -join ' ') puis git tag -a v$target ;" }
+  if (-not $cws) { $todo += 'Chrome Web Store : envoyer dist/publication/telecharger/ronflux-chrome.zip comme nouvelle version (tools\chrome-web-store.ps1 -Upload, ou docs/chrome-web-store.md).' }
+  if ($todo.Count) {
+    Write-Host 'Reste à faire :'
+    foreach ($line in $todo) { Write-Host "  - $line" }
+  }
 } catch {
   if ($resume) {
-    Write-Warning "Arrêt après la signature. Reprendre avec : $resume"
+    Write-Warning "$resumeNote. Reprendre avec : $resume"
   } elseif ($bumped) {
     Write-Warning "Arrêt après la montée de version. Reprendre avec : release.ps1 -Version $target"
   }

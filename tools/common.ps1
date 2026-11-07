@@ -46,6 +46,16 @@ function Get-PagesProject {
   $name
 }
 
+# Identifiant de la fiche Chrome Web Store (release.ps1 y envoie chaque version). Il est public :
+# c'est celui de l'adresse de la fiche.
+function Get-ChromeWebStoreItem {
+  $id = [string] (Read-Json 'distribution.json').chromeWebStoreItemId
+  if ($id -notmatch '^[a-p]{32}$') {
+    throw "distribution.json : chromeWebStoreItemId doit être l'identifiant de la fiche Chrome Web Store (32 lettres de a à p), reçu « $id »."
+  }
+  $id
+}
+
 # Identifiant de l'extension Firefox : celui de extension/manifest.firefox.json. L'installation
 # existante se met à jour par cet identifiant, il ne doit jamais changer.
 function Get-FirefoxId {
@@ -166,4 +176,79 @@ function Get-NativeOutput([string] $Exe, [string[]] $Arguments) {
   $null = Get-Command $Exe -CommandType Application -ErrorAction Stop
   $ErrorActionPreference = 'Continue'
   & $Exe @Arguments 2>$null
+}
+
+# --- Secrets ------------------------------------------------------------------------------
+# Chiffrés par DPAPI dans %USERPROFILE%\.secrets (README, section Publication), au format de
+# ~/.claude/scripts/secret.ps1 (ConvertFrom-SecureString, DPAPI du compte Windows courant).
+
+# Clé du compte de service Google qui envoie les versions au Chrome Web Store, avec
+# l'identifiant d'éditeur : rangée par tools/chrome-web-store.ps1 -SaveKey.
+$ChromeWebStoreSecret = 'chrome-web-store'
+
+function Get-SecretPath([string] $Name) { Join-Path $env:USERPROFILE ".secrets\$Name.dpapi" }
+
+# La valeur ne sort de cette fonction que pour aller dans l'environnement de l'outil qui s'en
+# sert. Les espaces qu'un copier-coller ajoute aux extrémités sont retirés (sinon AMO répond
+# « Error decoding signature »).
+function Read-DpapiSecret([string] $Name) {
+  $path = Get-SecretPath $Name
+  if (-not (Test-Path -LiteralPath $path)) { throw "Clé « $Name » absente ($path) : voir README, section Publication." }
+  try {
+    $secure = (Get-Content -Raw -LiteralPath $path).Trim() | ConvertTo-SecureString
+  } catch {
+    throw "Clé « $Name » illisible ($path) : chiffrée par un autre compte Windows ou abîmée, la ranger de nouveau."
+  }
+  $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
+  try { $value = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr).Trim() }
+  finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr) }
+  if (-not $value) { throw "Clé « $Name » vide : la ranger de nouveau." }
+  $value
+}
+
+# Environnement d'un outil qui reçoit un secret : les variables qui commencent par l'un des
+# préfixes sont écartées (une valeur laissée par un autre projet pourrait détourner l'envoi),
+# puis $Values est posé. Exit-ToolEnv remet tout en l'état, sans jamais afficher de valeur.
+function Enter-ToolEnv([string[]] $ClearPrefixes, [hashtable] $Values) {
+  $saved = @{}
+  foreach ($item in @(Get-ChildItem Env:)) {
+    foreach ($prefix in $ClearPrefixes) {
+      if ($item.Name.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase)) { $saved[$item.Name] = $item.Value; break }
+    }
+  }
+  $state = @{ Saved = $saved; Set = @($Values.Keys) }
+  foreach ($name in $saved.Keys) { Remove-Item -LiteralPath "Env:\$name" }
+  foreach ($name in $Values.Keys) { Set-Item -LiteralPath "Env:\$name" -Value $Values[$name] }
+  $state
+}
+
+function Exit-ToolEnv($State) {
+  foreach ($name in $State.Set) { Remove-Item -LiteralPath "Env:\$name" -ErrorAction SilentlyContinue }
+  foreach ($name in $State.Saved.Keys) { Set-Item -LiteralPath "Env:\$name" -Value $State.Saved[$name] }
+}
+
+# --- Chrome Web Store ---------------------------------------------------------------------
+# tools/chrome-web-store.mjs parle à l'API du store ; la clé lui arrive par la variable
+# RONFLUX_CWS_KEY, posée le temps de l'appel. Renvoie le code de sortie du script.
+function Invoke-ChromeWebStore([string[]] $Arguments) {
+  $script = Join-Path $RepoRoot 'tools\chrome-web-store.mjs'
+  $toolEnv = Enter-ToolEnv @('RONFLUX_CWS_') @{ RONFLUX_CWS_KEY = (Read-DpapiSecret $ChromeWebStoreSecret) }
+  try {
+    Invoke-NativeCode 'node' (@($script) + $Arguments)
+  } finally {
+    Exit-ToolEnv $toolEnv
+  }
+}
+
+# Envoie un paquet Chrome au store puis le soumet à l'examen. Le paquet doit être celui de la
+# version attendue : une fois envoyé, il remplace le brouillon de la fiche. Ne renvoie pas une
+# version que le store a déjà (le script le vérifie avant l'envoi).
+function Send-ChromeWebStorePackage([string] $ZipPath, [string] $ExpectedVersion) {
+  $entries = Read-ZipEntries ([IO.File]::ReadAllBytes($ZipPath))
+  if (-not $entries.ContainsKey('manifest.json')) { throw "$ZipPath n'a pas de manifest.json." }
+  $version = ($Utf8NoBom.GetString($entries['manifest.json']).TrimStart([char]0xFEFF) | ConvertFrom-Json).version
+  if ($version -notmatch '^\d+\.\d+\.\d+$') { throw "Version illisible dans le manifeste de $ZipPath : « $version »." }
+  if ($ExpectedVersion -and $version -ne $ExpectedVersion) { throw "$ZipPath est en version $version, $ExpectedVersion attendue." }
+  $code = Invoke-ChromeWebStore @('upload', (Get-ChromeWebStoreItem), $ZipPath, $version)
+  if ($code -ne 0) { throw "L'envoi au Chrome Web Store a échoué (code $code)." }
 }

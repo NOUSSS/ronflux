@@ -230,7 +230,28 @@ changer : elles ne recevraient plus les mises à jour.
    confidentialité et la distribution d'après [docs/chrome-web-store.md](docs/chrome-web-store.md)
    (visibilité « non répertoriée »).
 3. Une fois l'article accepté, mettre le lien de sa fiche dans la configuration du site
-   (`chromeWebStoreUrl`) : le bouton Chrome du site y mène alors directement.
+   (`chromeWebStoreUrl`) : le bouton Chrome du site y mène alors directement. Son identifiant va
+   dans `distribution.json` (`chromeWebStoreItemId`), pour les envois de `release.ps1`.
+4. Donner à `release.ps1` le droit d'envoyer les versions, par un compte de service Google
+   (l'API du store le permet, sans jeton à renouveler) :
+   1. sur https://console.cloud.google.com, créer un projet (ou en prendre un) ;
+   2. « API et services » → « Bibliothèque » → « Chrome Web Store API » → « Activer » ;
+   3. « IAM et administration » → « Comptes de service » → « Créer un compte de service »,
+      sans lui donner de rôle ;
+   4. ouvrir ce compte → « Clés » → « Ajouter une clé » → « Créer une clé » → JSON : le
+      navigateur télécharge la clé ;
+   5. dans le tableau de bord du Chrome Web Store, section « Compte » : ajouter l'adresse du
+      compte de service (`…@….iam.gserviceaccount.com`), enregistrer, et relever l'identifiant
+      d'éditeur affiché dans la même section (un seul compte de service par éditeur) ;
+   6. ranger la clé et l'identifiant d'éditeur, chiffrés par DPAPI. Le script vérifie aussitôt
+      auprès du store que la clé marche, puis le fichier téléchargé peut être supprimé :
+
+      ```powershell
+      powershell -ExecutionPolicy Bypass -File .\tools\chrome-web-store.ps1 -SaveKey <clé.json> -PublisherId <identifiant d'éditeur>
+      ```
+
+   `tools\chrome-web-store.ps1 -Status` montre ensuite à tout moment les versions publiée et en
+   examen, sans rien modifier. L'identifiant d'éditeur reste hors du dépôt, avec la clé.
 
 ### À chaque version
 
@@ -261,18 +282,23 @@ powershell -ExecutionPolicy Bypass -File .\release.ps1           # 1.0.2 → 1.0
    tout sur Cloudflare Pages (`wrangler pages deploy`, branche de production `main`).
    `updates.json` et le `.xpi` partent ainsi ensemble, car le premier contient l'empreinte du
    second. Le script s'arrête si le site ne sert pas le `.xpi` en `application/x-xpinstall`
-   (fichier `_headers`) : Firefox le téléchargerait au lieu de proposer l'installation.
+   (fichier `_headers`) : Firefox le téléchargerait au lieu de proposer l'installation ;
+7. envoie `ronflux-chrome.zip` au Chrome Web Store et le soumet à l'examen
+   (`tools/chrome-web-store.mjs`, API v2 du store). Google le publie dès qu'il l'accepte, en
+   général sous quelques jours, avec la visibilité de la fiche (non répertoriée), puis Chrome met
+   à jour les installations tout seul. Cette étape vient en dernier : un refus du store ne retarde
+   ni Firefox ni le site.
 
-Les clés et le jeton ne sont déchiffrés qu'au moment de s'en servir et passés à web-ext ou à
-wrangler par l'environnement de leur seul processus, jamais en argument ni à l'écran. Les autres
-variables `WEB_EXT_*`, `CLOUDFLARE_*`, `CF_*` et `WRANGLER_*` sont écartées le temps de l'appel.
+Les clés et le jeton ne sont déchiffrés qu'au moment de s'en servir et passés à web-ext, à
+wrangler ou à `tools/chrome-web-store.mjs` par l'environnement de leur seul processus, jamais en
+argument ni à l'écran. Les autres variables `WEB_EXT_*`, `CLOUDFLARE_*`, `CF_*`, `WRANGLER_*` et
+`RONFLUX_CWS_*` sont écartées le temps de l'appel.
 
 Options : `-NoCommit` saute le commit et l'étiquette ; `-NoDeploy` saute le déploiement, et
 `dist/publication/` est alors à déposer à la racine du site. Sans dossier `site/`, le déploiement
-est sauté.
-
-Seule l'étape du Chrome Web Store reste à la main : onglet « Paquet » → « Importer un nouveau
-paquet » → `dist/publication/telecharger/ronflux-chrome.zip` → « Envoyer pour examen ».
+est sauté. `-NoChromeWebStore` saute l'envoi au store, à faire alors avec
+`tools\chrome-web-store.ps1 -Upload dist\publication\telecharger\ronflux-chrome.zip` ou à la main
+(onglet « Paquet » → « Importer un nouveau paquet » → « Envoyer pour examen »).
 
 **Reprise** :
 
@@ -282,7 +308,10 @@ paquet » → `dist/publication/telecharger/ronflux-chrome.zip` → « Envoyer p
   de reprise, `release.ps1 -SignedXpi <fichier>`, qui termine sans renvoyer la version à AMO (il
   refuse deux envois du même numéro). Un commit ou une étiquette déjà posés ne sont pas refaits ;
 - AMO a reçu la version mais l'attente de la signature a expiré : télécharger le `.xpi` signé
-  depuis la page de la version sur le Developer Hub, puis `release.ps1 -SignedXpi <fichier>`.
+  depuis la page de la version sur le Developer Hub, puis `release.ps1 -SignedXpi <fichier>` ;
+- arrêt à l'envoi au Chrome Web Store (version précédente encore en examen, paquet refusé) : le
+  script affiche `tools\chrome-web-store.ps1 -Upload <paquet> -Version x.y.z`, qui ne refait que
+  cette étape. Une version que le store a déjà, publiée ou en examen, n'est jamais renvoyée.
 
 **Changer l'adresse du site** : modifier `siteUrl` dans `distribution.json` (et
 `cloudflarePagesProject` si le site passe sur un autre projet Pages). Les installations

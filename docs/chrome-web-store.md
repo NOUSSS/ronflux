@@ -7,9 +7,14 @@ même fichier que celui proposé sur le site pour le mode développeur.
 
 ## Paquet
 
-- Onglet « Paquet » → « Importer un nouveau paquet » → `ronflux-chrome.zip`.
-- Chaque nouvelle version : même opération, puis « Envoyer pour examen ». Le numéro de version
-  vient du manifeste et doit augmenter à chaque envoi (c'est `release.ps1` qui le monte).
+- Première version : onglet « Paquet » → « Importer un nouveau paquet » → `ronflux-chrome.zip`
+  (l'API du store ne sait pas créer un article).
+- Versions suivantes : `release.ps1` envoie le paquet et le soumet à l'examen (étape 7, compte de
+  service décrit dans le README, section Publication). À la main, c'est la même opération, puis
+  « Envoyer pour examen ». Le numéro de version vient du manifeste et doit augmenter à chaque
+  envoi (c'est `release.ps1` qui le monte).
+- Un changement de visibilité fait sur le tableau de bord bloque les envois par l'API jusqu'à une
+  première publication à la main avec la nouvelle visibilité.
 
 ## Fiche du Chrome Web Store
 
