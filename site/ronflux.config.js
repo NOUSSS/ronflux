@@ -2,5 +2,5 @@
 export default {
   // Adresse de la fiche Chrome Web Store (non répertoriée), en https.
   // Tant qu'elle est vide, le lien n'apparaît nulle part et Chrome passe par le ZIP.
-  chromeWebStoreUrl: '',
+  chromeWebStoreUrl: 'https://chromewebstore.google.com/detail/ronflux/accjkgemidiegmhjmaaifbddpjhacgon',
 };

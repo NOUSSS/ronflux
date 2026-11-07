@@ -253,12 +253,13 @@
           </div>
           <div class="question">
             <h3>Comment se font les mises à jour ?</h3>
-            <!-- si:maj-firefox -->
-            <p>Avec Firefox, toutes seules. Avec Chrome, Brave, Edge ou Opera en mode développeur, à la main : téléchargez le nouveau ZIP, remplacez le contenu du dossier, puis rechargez Ronflux depuis la page des extensions. Le userscript, lui, se met à jour par Tampermonkey ou Violentmonkey.</p>
-            <!-- /si:maj-firefox -->
-            <!-- sinon:maj-firefox -->
-            <p>Avec Firefox, installez la nouvelle version depuis cette page : elle remplace l’ancienne, sans rien perdre. Avec Chrome, Brave, Edge ou Opera en mode développeur, à la main : téléchargez le nouveau ZIP, remplacez le contenu du dossier, puis rechargez Ronflux depuis la page des extensions. Le userscript, lui, se met à jour par Tampermonkey ou Violentmonkey.</p>
-            <!-- /sinon:maj-firefox -->
+            <p>
+              <!-- si:maj-firefox -->Avec Firefox, toutes seules.<!-- /si:maj-firefox -->
+              <!-- sinon:maj-firefox -->Avec Firefox, installez la nouvelle version depuis cette page : elle remplace l’ancienne, sans rien perdre.<!-- /sinon:maj-firefox -->
+              <!-- si:cws -->Avec Chrome, Brave, Edge ou Opera, toutes seules si Ronflux vient du Chrome Web Store. En mode développeur, à la main : téléchargez le nouveau ZIP, remplacez le contenu du dossier, puis rechargez Ronflux depuis la page des extensions.<!-- /si:cws -->
+              <!-- sinon:cws -->Avec Chrome, Brave, Edge ou Opera en mode développeur, à la main : téléchargez le nouveau ZIP, remplacez le contenu du dossier, puis rechargez Ronflux depuis la page des extensions.<!-- /sinon:cws -->
+              Le userscript, lui, se met à jour par Tampermonkey ou Violentmonkey.
+            </p>
           </div>
           <div class="question">
             <h3>Une pub est passée quand même : que faire ?</h3>
