@@ -109,8 +109,9 @@ function masterPlaylist(channel, type) {
   return lines.join('\n') + '\n';
 }
 
-function mediaPlaylist(channel, type, quality, ad) {
-  const lines = ['#EXTM3U', '#EXT-X-VERSION:3', '#EXT-X-TARGETDURATION:2', '#EXT-X-MEDIA-SEQUENCE:500'];
+function mediaPlaylist(channel, type, quality, ad, seq) {
+  const lines = ['#EXTM3U', '#EXT-X-VERSION:3', '#EXT-X-TARGETDURATION:2', '#EXT-X-MEDIA-SEQUENCE:' + seq.media];
+  if (seq.live != null) lines.push('#EXT-X-TWITCH-LIVE-SEQUENCE:' + seq.live);
   if (ad) {
     lines.push(
       '#EXT-X-DATERANGE:ID="stitched-ad-1",' + AD_MARKER + ',START-DATE="2026-11-06T20:00:00.000Z",' +
@@ -137,6 +138,9 @@ function createNetwork() {
     // (chaîne, type) -> false | 'midroll' | 'preroll'. Type « main » : le flux du lecteur ;
     // « popout/web », « site/ios »… : les flux de secours demandés par Ronflux.
     adFor: () => false,
+    // (chaîne, type) -> { media, live } : #EXT-X-MEDIA-SEQUENCE et #EXT-X-TWITCH-LIVE-SEQUENCE
+    // (live null : pas de balise). Une session qui a reçu un pre-roll numérote à partir de 0.
+    sequenceFor: () => ({ media: 500, live: 500 }),
     log: [],
     count(kind) { return net.log.filter((r) => r.kind === kind).length; },
     async fetch(input, init) {
@@ -163,7 +167,7 @@ function createNetwork() {
       if (u.hostname.endsWith('.playlist.ttvnw.net') && m) {
         const type = decodeURIComponent(m[2]);
         net.log.push({ kind: 'media', channel: m[1], type, quality: m[3] });
-        return text(mediaPlaylist(m[1], type, m[3], net.adFor(m[1], type)));
+        return text(mediaPlaylist(m[1], type, m[3], net.adFor(m[1], type), net.sequenceFor(m[1], type)));
       }
       return new Response('', { status: 404 });
     },
@@ -421,6 +425,7 @@ class Player {
   async poll(quality = '1080p60') {
     const text = await this.worker.scope.load(mediaUrl(this.channel, 'main', quality));
     await this.env.settle();
+    this.lastText = text;
     return describe(text);
   }
   terminate() { this.worker.terminate(); }

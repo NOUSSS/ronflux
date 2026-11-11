@@ -26,7 +26,9 @@
  *      (#EXT-X-DATERANGE ... CLASS="twitch-stitched-ad"), il demande un jeton d'accès pour un autre
  *      « playerType » (embed, autoplay, picture-by-picture…) qui ne reçoit pas de pub, récupère la
  *      playlist correspondante à la même qualité et la renvoie au lecteur à la place ;
- *   3. à la fin de la pub, revient au flux d'origine et recharge le lecteur pour resynchroniser ;
+ *   3. à la fin de la pub, revient au flux d'origine, renuméroté comme le flux de secours, et,
+ *      après un mid-roll, recharge le lecteur pour resynchroniser (jamais après un pre-roll : le
+ *      rechargement en ferait servir un autre) ;
  *   4. si aucun flux de secours n'est trouvé, masque le lecteur et coupe le son le temps de la pub.
  *
  * Tout est configurable dans CONFIG ci-dessous. Journal dans la console (F12), préfixe [Ronflux].
@@ -52,8 +54,9 @@
     // le temps de la pub (au lieu de la regarder).
     hidePlayerOnUnblockedAd: true,
 
-    // Recharger le lecteur à la fin d'une pub pendant laquelle un flux de secours a servi,
-    // pour resynchroniser la lecture : 'always' | 'quality-changed' | 'never'.
+    // Recharger le lecteur à la fin d'un mid-roll pendant lequel un flux de secours a servi,
+    // pour resynchroniser la lecture : 'always' | 'quality-changed' | 'never'. Jamais après un
+    // pre-roll (voir maybeReloadAfterAd).
     reloadPlayerAfterAd: 'always',
 
     // Délai minimal entre deux rechargements automatiques du lecteur (évite les boucles).
@@ -120,6 +123,7 @@
       ad: null,                // pub en cours
       lastGoodType: new Map(), // chaîne -> dernier type de lecteur sans pub
       warnedNoMaster: false,   // avertissement « pub sans playlist maîtresse » déjà émis
+      servedBackup: false,     // le lecteur a reçu un flux de secours depuis la playlist maîtresse
     };
 
     const log = (...a) => { if (cfg.debug) console.log(TAG, ...a); };
@@ -380,6 +384,7 @@
         if (state.channel !== channel) endAd(true);
         state.channel = channel;
         state.usherUrl = url;
+        state.servedBackup = false;
         state.qualities = parseMaster(text);
         state.byUrl = new Map(state.qualities.map((q) => [q.url, q]));
         log('playlist maîtresse', channel, state.qualities.map((q) => q.name));
@@ -396,7 +401,7 @@
 
       if (!AD_RE.test(text)) {
         endAd(false);
-        return wrap(text);
+        return wrap(state.servedBackup ? toLiveSequence(text) : text);
       }
       if (!state.channel || !state.usherUrl) {
         // Ne jamais laisser passer une pub en silence : sans playlist maîtresse connue, on ne peut
@@ -424,7 +429,19 @@
         info('pub détectée (' + (state.ad.isMidroll ? 'mid-roll' : 'pre-roll') + ')', quality ? quality.name : '');
       }
       const backup = await getBackupPlaylist(state.ad, quality);
+      if (backup != null) state.servedBackup = true;
       return wrap(backup != null ? backup : text);
+    }
+
+    // Une session qui reçoit un pre-roll numérote ses segments à partir de 0, quand le flux de
+    // secours suit la numérotation du live. Revenu sur le flux d'origine après la pub, le lecteur
+    // attendrait des segments plus récents que ceux du secours (image figée, parfois plus d'une
+    // minute). La session donne la correspondance avec le live dans #EXT-X-TWITCH-LIVE-SEQUENCE
+    // (constaté 2026-11-11) : on la reprend comme numéro de séquence.
+    function toLiveSequence(text) {
+      const live = text.match(/^#EXT-X-TWITCH-LIVE-SEQUENCE:(\d+)\s*$/m);
+      if (!live) return text;
+      return text.replace(/^#EXT-X-MEDIA-SEQUENCE:\d+\s*$/m, '#EXT-X-MEDIA-SEQUENCE:' + live[1]);
     }
 
     // Playlist maîtresse : usher.ttvnw.net/api/channel/hls/<chaîne>.m3u8 (ancien lecteur)
@@ -720,11 +737,27 @@
     return false;
   }
 
+  // Le rechargement demande un nouveau jeton, donc une nouvelle session de lecture, et Twitch
+  // sert un pre-roll à chaque nouvelle session tant qu'aucune pub n'a été vue. Recharger après
+  // un pre-roll en ferait servir un autre, sans fin, et le lecteur resterait sur le flux de
+  // secours (360p) : on ne recharge pas après un pre-roll. Si un pre-roll suit l'un de nos
+  // rechargements, cette page en reçoit un à chaque session : on ne recharge plus non plus après
+  // un mid-roll.
+  const PREROLL_AFTER_RELOAD_MS = 30000;
   let lastReloadAt = 0;
+  let reloadBringsPreroll = false;
+  function notePrerollAfterReload(d) {
+    if (reloadBringsPreroll || d.isMidroll || !lastReloadAt) return;
+    if (Date.now() - lastReloadAt > PREROLL_AFTER_RELOAD_MS) return;
+    reloadBringsPreroll = true;
+    info('pre-roll servi après le rechargement du lecteur : plus de rechargement après les pubs sur cette page');
+  }
   function maybeReloadAfterAd(d) {
     const mode = CONFIG.reloadPlayerAfterAd;
     if (mode === 'never' || !d.usedBackup) return;
     if (mode === 'quality-changed' && !d.qualityChanged) return;
+    if (!d.isMidroll) { log('pas de rechargement après un pre-roll'); return; }
+    if (reloadBringsPreroll) { log('rechargement ignoré (il ferait servir un pre-roll)'); return; }
     const now = Date.now();
     if (now - lastReloadAt < CONFIG.minReloadIntervalMs) { log('rechargement ignoré (trop récent)'); return; }
     lastReloadAt = now;
@@ -736,6 +769,7 @@
   function onWorkerMessage(worker, ev) {
     const d = ev.data;
     if (!d || d.key !== 'RONFLUX_AD_STATE') return;
+    if (d.active) notePrerollAfterReload(d);
     if (d.active && !d.backupFound) { setMasked(worker, true); return; }
     setMasked(worker, false);
     if (d.active) toast('Pub bloquée');

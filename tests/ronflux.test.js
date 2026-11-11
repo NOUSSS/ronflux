@@ -49,6 +49,86 @@ test('pub bloquée : flux de secours pendant la pub, puis flux d’origine et re
   assert.deepEqual(env.warnings(), []);
 });
 
+const mediaSequence = (text) => +text.match(/#EXT-X-MEDIA-SEQUENCE:(\d+)/)[1];
+
+test('pre-roll bloqué : retour au flux d’origine sans rechargement, dans la numérotation du secours', async () => {
+  // Le rechargement demande un nouveau jeton, et Twitch sert alors un nouveau pre-roll : le
+  // lecteur restait sans fin sur le flux de secours (360p). Sans rechargement, la session du
+  // pre-roll, numérotée à partir de 0, figeait l'image : le lecteur attendait des segments
+  // plus récents que ceux du secours.
+  const env = createEnv();
+  const player = env.startPlayer();
+  await player.loadChannel('chan1');
+  env.net.adFor = (channel, type) => (type === 'main' ? 'preroll' : false);
+  env.net.sequenceFor = (channel, type) => (type === 'main' ? { media: 0, live: 4601 } : { media: 4587, live: 4587 });
+  assert.deepEqual(await player.poll(), LIVE('chan1', 'popout/web'));
+  assert.equal(mediaSequence(player.lastText), 4587);
+
+  env.clock.advance(60000);
+  env.net.adFor = () => false;
+  env.net.sequenceFor = (channel, type) => (type === 'main' ? { media: 9, live: 4602 } : { media: 4602, live: 4602 });
+  assert.deepEqual(await player.poll(), LIVE('chan1', 'main'));
+  assert.equal(mediaSequence(player.lastText), 4602);
+  assert.equal(env.dom.reloads.length, 0);
+});
+
+test('flux d’origine jamais remplacé : numérotation laissée telle quelle', async () => {
+  // Pub masquée faute de secours : le lecteur a suivi la numérotation de sa session.
+  const env = createEnv();
+  const player = env.startPlayer();
+  await player.loadChannel('chan1');
+  env.net.adFor = () => 'preroll';
+  env.net.sequenceFor = () => ({ media: 0, live: 4601 });
+  assert.deepEqual(await player.poll(), AD);
+  env.net.adFor = () => false;
+  env.net.sequenceFor = () => ({ media: 9, live: 4602 });
+  assert.deepEqual(await player.poll(), LIVE('chan1', 'main'));
+  assert.equal(mediaSequence(player.lastText), 9);
+
+  // Nouvelle playlist maîtresse (lecteur rechargé) : le lecteur repart de la numérotation reçue.
+  env.net.adFor = (channel, type) => (type === 'main' ? 'preroll' : false);
+  assert.deepEqual(await player.poll(), LIVE('chan1', 'popout/web'));
+  await player.loadChannel('chan1');
+  env.net.adFor = () => false;
+  assert.deepEqual(await player.poll(), LIVE('chan1', 'main'));
+  assert.equal(mediaSequence(player.lastText), 9);
+});
+
+test('pre-roll servi après un rechargement : plus de rechargement après les mid-rolls', async () => {
+  const env = createEnv();
+  const player = env.startPlayer();
+  await player.loadChannel('chan1');
+  const roll = async (kind) => {
+    env.net.adFor = (channel, type) => (type === 'main' ? kind : false);
+    assert.deepEqual(await player.poll(), LIVE('chan1', 'popout/web'));
+    env.clock.advance(5000);
+    env.net.adFor = () => false;
+    assert.deepEqual(await player.poll(), LIVE('chan1', 'main'));
+  };
+
+  await roll('midroll');
+  assert.equal(env.dom.reloads.length, 1);
+  await roll('preroll');
+  assert.equal(env.dom.reloads.length, 1);
+  env.clock.advance(120000);
+  await roll('midroll');
+  assert.equal(env.dom.reloads.length, 1);
+});
+
+test('mid-roll sans pre-roll après le rechargement : le lecteur est rechargé à chaque fois', async () => {
+  const env = createEnv();
+  const player = env.startPlayer();
+  await player.loadChannel('chan1');
+  for (let i = 1; i <= 2; i++) {
+    env.net.adFor = (channel, type) => (type === 'main' ? 'midroll' : false);
+    assert.deepEqual(await player.poll(), LIVE('chan1', 'popout/web'));
+    env.clock.advance(60000);
+    env.net.adFor = () => false;
+    assert.deepEqual(await player.poll(), LIVE('chan1', 'main'));
+    assert.equal(env.dom.reloads.length, i);
+  }
+});
+
 test('bug 1 : le message « Pub bloquée » disparaît même si requestAnimationFrame est suspendu', async () => {
   // Onglet en arrière-plan ou fenêtre recouverte (jeu en plein écran) : le navigateur ne dessine
   // plus d'image, mais les minuteurs tournent toujours.

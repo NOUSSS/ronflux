@@ -37,7 +37,9 @@ domaine classique. Le script agit donc au niveau du lecteur :
    (`#EXT-X-DATERANGE … CLASS="twitch-stitched-ad"`), le script demande un jeton d'accès pour un
    autre type de lecteur (`embed`, `popout`, `frontpage`…) qui ne reçoit pas de pub, récupère la
    playlist correspondante à la même qualité et la renvoie au lecteur à la place.
-3. À la fin de la pub, le flux d'origine reprend et le lecteur est rechargé pour se resynchroniser.
+3. À la fin de la pub, le flux d'origine reprend, renuméroté comme le flux de secours. Après un
+   mid-roll, le lecteur est aussi rechargé pour se resynchroniser ; jamais après un pre-roll, car le
+   rechargement en ferait servir un autre.
 4. Si aucun flux de secours sans pub n'est trouvé, le lecteur est masqué et le son coupé le temps
    de la pub, et une nouvelle recherche est lancée toutes les 10 s (configurable).
 
@@ -328,7 +330,7 @@ Tout se règle dans l'objet `CONFIG` en tête de `src/ronflux.user.js` :
 | `debug` | `false` | Journal détaillé dans la console |
 | `showNotifications` | `true` | Petit message dans le lecteur quand une pub est bloquée |
 | `hidePlayerOnUnblockedAd` | `true` | Masquer le lecteur et couper le son si aucun flux de secours n'est trouvé |
-| `reloadPlayerAfterAd` | `'always'` | Recharger le lecteur après une pub : `'always'`, `'quality-changed'` ou `'never'` |
+| `reloadPlayerAfterAd` | `'always'` | Recharger le lecteur après un mid-roll (jamais après un pre-roll) : `'always'`, `'quality-changed'` ou `'never'` |
 | `minReloadIntervalMs` | `45000` | Délai minimal entre deux rechargements automatiques |
 | `retryIntervalMs` | `10000` | Délai avant de rechercher à nouveau un flux de secours après un échec |
 | `backupPlayerTypes` | liste | Types de lecteur essayés dans l'ordre pour obtenir un flux sans pub |
@@ -425,7 +427,7 @@ Mesures faites sur twitch.tv depuis la France, sans compte :
 ## Limites connues
 
 - Pendant une pub, la qualité peut baisser si le flux de secours n'offre pas la qualité d'origine
-  (le script choisit la plus proche). Un court rechargement du lecteur a lieu à la fin de la pub.
+  (le script choisit la plus proche). Un court rechargement du lecteur a lieu à la fin d'un mid-roll.
 - Seuls les lives sont traités, pas les VOD ni les clips.
 - Le script dépend de détails internes de Twitch (worker du lecteur, format des playlists,
   composant React du lecteur). Une refonte côté Twitch peut le casser : vérifier la console.
