@@ -166,7 +166,7 @@ async function main() {
   const label = STATES[published.state] || published.state || 'état inconnu';
   console.log(`Version ${version} soumise : ${label}.`);
   if (published.state === 'PENDING_REVIEW') {
-    console.log('Google l\'examine (de quelques heures à quelques jours), puis Chrome la distribue tout seul.');
+    console.log('Google l\'examine (en général moins d\'une heure sans nouvelle permission), puis Chrome la distribue tout seul en quelques heures.');
   }
 }
 

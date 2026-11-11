@@ -14,7 +14,7 @@
 #      (wrangler pages deploy), sauf -NoDeploy ou si site/ n'existe pas ;
 #   7. envoie le paquet Chrome au Chrome Web Store et le soumet à l'examen
 #      (tools/chrome-web-store.mjs), sauf -NoChromeWebStore. Google le publie dès qu'il
-#      l'accepte, en général sous quelques jours.
+#      l'accepte, en général en moins d'une heure pour une mise à jour sans nouvelle permission.
 #
 # Secrets chiffrés par DPAPI dans %USERPROFILE%\.secrets (README, section Publication) :
 # amo-jwt-issuer et amo-jwt-secret (clés API AMO), cloudflare-pages ou, à défaut,

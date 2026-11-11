@@ -287,8 +287,9 @@ powershell -ExecutionPolicy Bypass -File .\release.ps1           # 1.0.2 → 1.0
    (fichier `_headers`) : Firefox le téléchargerait au lieu de proposer l'installation ;
 7. envoie `ronflux-chrome.zip` au Chrome Web Store et le soumet à l'examen
    (`tools/chrome-web-store.mjs`, API v2 du store). Google le publie dès qu'il l'accepte, en
-   général sous quelques jours, avec la visibilité de la fiche (non répertoriée), puis Chrome met
-   à jour les installations tout seul. Cette étape vient en dernier : un refus du store ne retarde
+   général en moins d'une heure pour une mise à jour sans nouvelle permission (1.1.2 : moins de
+   30 min), avec la visibilité de la fiche (non répertoriée). Chrome et Brave mettent ensuite à
+   jour les installations tout seuls, en quelques heures. Cette étape vient en dernier : un refus du store ne retarde
    ni Firefox ni le site.
 
 Les clés et le jeton ne sont déchiffrés qu'au moment de s'en servir et passés à web-ext, à
