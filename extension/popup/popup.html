@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Ronflux</title>
+  <link rel="stylesheet" href="popup.css">
+  <script src="popup.js" defer></script>
+</head>
+<body>
+  <header class="tete">
+    <svg class="signe" viewBox="22 12 74 78" aria-hidden="true">
+      <path d="M28 84 V18 H50 A15 15 0 0 1 50 48 H28" fill="none" stroke="currentColor" stroke-width="12"/>
+      <path d="M42 48 L52 66 C56 75 61 76 65 67 C69 57 74 57 78 66 C81 73 85 74 88 70 L96 70" fill="none" stroke="currentColor" stroke-width="10" stroke-linejoin="round"/>
+    </svg>
+    <span class="nom">Ronflux</span>
+  </header>
+
+  <section class="etat" id="etat" data-etat="attente">
+    <p class="etat-titre"><span class="plume" aria-hidden="true"></span><span id="etat-titre">…</span></p>
+    <p class="etat-detail" id="etat-detail"></p>
+    <button class="bouton" id="autoriser" type="button" hidden>Autoriser sur twitch.tv</button>
+  </section>
+
+  <dl class="faits">
+    <div><dt>Version</dt><dd id="version">…</dd></div>
+    <div id="ligne-date" hidden><dt>Publiée le</dt><dd id="date"></dd></div>
+    <div><dt>Mises à jour</dt><dd id="maj">Automatiques</dd></div>
+  </dl>
+
+  <nav class="liens">
+    <a id="lien-site" href="https://ronflux.feitanx.com" target="_blank" rel="noopener">Site</a>
+    <a href="https://github.com/NOUSSS/ronflux" target="_blank" rel="noopener">Code source</a>
+    <a href="https://github.com/NOUSSS/ronflux/issues" target="_blank" rel="noopener">Signaler un problème</a>
+  </nav>
+</body>
+</html>

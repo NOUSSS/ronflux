@@ -54,6 +54,13 @@ foreach ($dir in @($ffDir, $chromeDir)) { Copy-Item .\extension\rules.json $dir 
 Copy-Item .\extension\icon.svg $ffDir
 Invoke-Native 'node' @('tools/icons.mjs', 'extension/icon.svg', (Join-Path $chromeDir 'icons'), '16', '32', '48', '128')
 
+# --- Popup (bouton de l'extension) : extension/popup/, plus infos.json (date du build, site). --
+$infos = [ordered]@{ date = (Get-Date).ToUniversalTime().ToString('yyyy-MM-dd'); site = $urls.site } | ConvertTo-Json -Compress
+foreach ($dir in @($ffDir, $chromeDir)) {
+  Copy-Item -Recurse .\extension\popup (Join-Path $dir 'popup')
+  [IO.File]::WriteAllText((Join-Path $dir 'popup\infos.json'), $infos, $Utf8NoBom)
+}
+
 # Chaque fichier cité par un manifeste doit exister dans son dossier, et rien d'autre ne doit y
 # traîner : le paquet contient exactement ce que le manifeste utilise.
 foreach ($dir in @($ffDir, $chromeDir)) {
@@ -63,7 +70,11 @@ foreach ($dir in @($ffDir, $chromeDir)) {
   $used += @($m.icons.PSObject.Properties | ForEach-Object { $_.Value })
   $used += @($m.content_scripts | ForEach-Object { $_.js })
   $used += @($m.declarative_net_request.rule_resources | ForEach-Object { $_.path })
+  $used += @($m.action.default_popup)
   $used = @($used | Select-Object -Unique)
+  # Les fichiers du dossier de la popup sont les siens (feuille de style, script, polices).
+  $popupDir = Split-Path -Parent $m.action.default_popup
+  $used += @(Get-ChildItem -LiteralPath (Join-Path $dir $popupDir) -Recurse -File | ForEach-Object { $_.FullName.Substring(((Resolve-Path $dir).Path.TrimEnd('\') + '\').Length).Replace('\', '/') })
   foreach ($rel in $used) {
     if (-not (Test-Path -LiteralPath (Join-Path $dir $rel) -PathType Leaf)) { throw "$dir : « $rel » cité par le manifeste mais absent." }
   }

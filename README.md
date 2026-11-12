@@ -143,6 +143,9 @@ powershell -ExecutionPolicy Bypass -File .\build.ps1
   build en tire les PNG de Chrome (`tools/icons.mjs`) et le site son favicon et le signe de la
   page. Pour changer de logo, remplacer ce fichier par un SVG carré qui garde la forme décrite
   dans `site/README.md` (« Logo et favicon »).
+- **Popup** : `extension/popup/` s'ouvre au clic sur le bouton de l'extension (état sur
+  l'onglet, version, date de publication, liens). Le build la copie telle quelle et y ajoute
+  `infos.json` (date du build et adresse du site) ; les polices sont celles du site (OFL).
 - **Adresses** : seule l'adresse de base du site se règle, `siteUrl` dans `distribution.json`.
   Les chemins sont fixes (`tools/common.ps1`) et partagés avec le site :
   `/telecharger/ronflux-firefox.xpi`, `/telecharger/ronflux-chrome.zip`,

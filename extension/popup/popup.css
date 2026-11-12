@@ -1,0 +1,133 @@
+/* Popup de l'extension : le papier d'enregistreur du site (site/DESIGN.md), en 320 px. */
+
+@font-face {
+  font-family: 'Sofia Sans Condensed';
+  font-weight: 1 1000;
+  font-display: block;
+  src: url('fonts/sofia-sans-condensed-latin-wght-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Sofia Sans';
+  font-weight: 1 1000;
+  font-display: block;
+  src: url('fonts/sofia-sans-latin-wght-normal.woff2') format('woff2');
+}
+
+:root {
+  --papier: #eef2ec;
+  --papier-clair: #f6f8f4;
+  --reglure: #dfe8e1;
+  --reglure-forte: #c6d6ca;
+  --encre: #1d2a2f;
+  --encre-2: #4a5c60;
+  --encre-survol: #34474e;
+  --condensee: 'Sofia Sans Condensed', 'Arial Narrow', sans-serif;
+  --texte: 'Sofia Sans', system-ui, sans-serif;
+  --filet-encre: linear-gradient(var(--encre), var(--encre)) top / 100% 1px no-repeat;
+  --filet: linear-gradient(var(--reglure-forte), var(--reglure-forte)) top / 100% 1px no-repeat;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; margin: 0; }
+
+html {
+  background-color: var(--papier);
+  background-image:
+    linear-gradient(var(--reglure-forte) 1px, transparent 1px),
+    linear-gradient(90deg, var(--reglure-forte) 1px, transparent 1px),
+    linear-gradient(var(--reglure) 1px, transparent 1px),
+    linear-gradient(90deg, var(--reglure) 1px, transparent 1px);
+  background-size: 40px 40px, 40px 40px, 8px 8px, 8px 8px;
+}
+
+body {
+  width: 320px;
+  padding: 0 24px 24px;
+  color: var(--encre);
+  font: 400 17px/24px var(--texte);
+}
+
+.tete {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 80px;
+}
+
+.signe { width: 32px; height: 32px; flex: none; }
+
+.nom { font: 700 28px/32px var(--condensee); }
+
+.etat {
+  padding: 16px 0 24px;
+  background: var(--filet-encre);
+}
+
+.etat-titre {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 600 21px/24px var(--condensee);
+}
+
+/* La plume : pleine quand Ronflux écrit sur l'onglet, levée sinon. */
+.plume {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border: 2px solid var(--encre);
+  border-radius: 50%;
+  background: var(--papier-clair);
+}
+[data-etat='actif'] .plume { background: var(--encre); }
+
+.etat-detail {
+  margin-top: 8px;
+  color: var(--encre-2);
+  font-size: 15px;
+}
+.etat-detail:empty { display: none; }
+
+.bouton {
+  margin-top: 16px;
+  height: 40px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 0;
+  background: var(--encre);
+  color: var(--papier);
+  font: 600 18px/24px var(--condensee);
+  cursor: pointer;
+  transition: background-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.bouton:hover { background: var(--encre-survol); }
+.bouton[hidden] { display: none; }
+
+:focus-visible { outline: 2px solid var(--encre); outline-offset: 3px; }
+
+.faits > div {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  background: var(--filet);
+}
+.faits > div:first-child { background: var(--filet-encre); }
+.faits > div[hidden] { display: none; }
+.faits dt { color: var(--encre-2); font-size: 15px; }
+.faits dd { font: 600 16px/24px var(--condensee); font-feature-settings: 'tnum'; }
+
+.liens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 16px;
+  padding-top: 16px;
+  background: var(--filet-encre);
+}
+
+.liens a {
+  color: var(--encre);
+  font: 500 17px/24px var(--condensee);
+  text-decoration: none;
+}
+.liens a:hover { text-decoration: underline 1px; text-underline-offset: 0.2em; }
