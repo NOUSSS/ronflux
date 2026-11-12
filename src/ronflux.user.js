@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Ronflux
 // @namespace    ronflux
-// @version      1.1.2
+// @version      1.2.0
 // @description  Bloque les publicités vidéo (pre-roll et mid-roll) des lives Twitch en basculant sur un flux de secours sans pub.
 // @author       Ronflux
 // @match        *://*.twitch.tv/*
@@ -37,7 +37,7 @@
 (function () {
   'use strict';
 
-  const VERSION = '1.1.2';
+  const VERSION = '1.2.0';
   const TAG = '[Ronflux]';
 
   // ---------------------------------------------------------------------------
